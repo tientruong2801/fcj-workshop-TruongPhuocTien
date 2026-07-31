@@ -78,4 +78,4 @@ The presentation that impressed me the most was **Docker and Containerization** 
 In addition, the event provided a comprehensive overview of how different cloud technologies work together. Topics ranging from machine learning-based security, real-time communication through WebSockets, to GraphRAG for advanced AI reasoning highlighted the importance of building a solid data foundation. The speakers' practical experiences and career advice also reinforced the value of continuous learning, hands-on practice, and adopting an engineering mindset for future career development.
 
 #### Event Photos
-![Event](/images/4-EventParticipated/event1.png)
+![Event](../../../images/4-EventParticipated/event1.png)

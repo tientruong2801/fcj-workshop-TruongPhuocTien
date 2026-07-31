@@ -33,4 +33,4 @@ The architectural combination of Amazon Bedrock and Aurora pgvector provides a c
 
 
 ### Blog screenshot
-![Blog 3](/images/3-BlogsPosted/Blog3.png)
+![Blog 3](../../../images/3-BlogsPosted/Blog3.png)

@@ -10,7 +10,7 @@ pre : " <b> 5.3. </b> "
 
 Below are the details of the Event-Driven Serverless infrastructure architecture on AWS for the News RAG platform. All of these services will be set up and configured directly via the AWS Management Console.
 
-![News RAG Pipeline Architecture](/images/5-Workshop/5.3-Infrastructure/architecture.png)
+![News RAG Pipeline Architecture](../../../images/5-Workshop/5.3-Infrastructure/architecture.png)
 
 ## 1. Networking & Security
 The system is hosted within a Virtual Private Cloud (VPC) to ensure data isolation and absolute security:

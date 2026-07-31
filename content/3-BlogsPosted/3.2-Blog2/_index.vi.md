@@ -32,4 +32,4 @@ Chúng tôi đã quyết định thay thế toàn bộ kiến trúc hàng đợi
 Bằng việc loại bỏ Kafka và chuyển sang SQS, hệ thống không chỉ trở nên nhẹ nhàng, dễ bảo trì hơn mà còn tiết kiệm được một khoản ngân sách vận hành rất lớn. Đây là một minh chứng thực tế cho thấy: **Lựa chọn công nghệ không phải là chọn thứ "xịn nhất", mà là chọn thứ "phù hợp nhất" với quy mô và bài toán hiện tại.**
 
 ### Blog screenshot
-![Blog 2](/images/3-BlogsPosted/Blog2.png)
+![Blog 2](../../../images/3-BlogsPosted/Blog2.png)

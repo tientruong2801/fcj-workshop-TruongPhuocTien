@@ -10,7 +10,7 @@ pre : " <b> 5.3. </b> "
 
 Dưới đây là chi tiết kiến trúc hạ tầng Serverless Hướng sự kiện (Event-Driven) trên AWS cho nền tảng News RAG. Toàn bộ các dịch vụ này sẽ được thiết lập và cấu hình trực tiếp thông qua giao diện AWS Management Console.
 
-![News RAG Pipeline Architecture](/images/5-Workshop/5.3-Infrastructure/architecture.png)
+![News RAG Pipeline Architecture](../../../images/5-Workshop/5.3-Infrastructure/architecture.png)
 
 ## 1. Mạng & Bảo mật (Networking & Security)
 Hệ thống được đặt trong một Mạng riêng ảo (VPC) để đảm bảo cô lập dữ liệu và bảo mật tuyệt đối:

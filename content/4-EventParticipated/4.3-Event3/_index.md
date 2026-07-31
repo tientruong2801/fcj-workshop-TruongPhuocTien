@@ -61,4 +61,4 @@ They successfully overcame numerous technical challenges, including maintaining 
 More importantly, the way S.H.E.P.H.E.R.D transformed an ordinary surveillance camera into an intelligent operational monitoring system using Computer Vision and Agentic AI demonstrated the practical impact of modern AI technologies. The project inspired me to explore how similar architectures could be applied to intelligent monitoring and automation systems in many other domains.
 
 #### Event Photos
-![Event](/images/4-EventParticipated/Event3.png)
+![Event](../../../images/4-EventParticipated/Event3.png)

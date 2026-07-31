@@ -77,4 +77,4 @@ Tham dự sự kiện "AWS First Cloud Journey" là một trải nghiệm mở m
 Bên cạnh đó, sự kiện còn mang đến một bức tranh toàn cảnh về việc kết nối các công nghệ chuyên sâu. Từ việc thiết lập hệ thống bảo mật chủ động bằng Machine Learning, xử lý sự kiện thời gian thực thông qua WebSockets, cho đến việc nâng tầm tư duy suy luận cho AI bằng GraphRAG – tất cả đều củng cố thêm tầm quan trọng của việc xây dựng nền móng dữ liệu vững chắc. Những bài học chân thực về sự kiên trì tự học và tư duy phòng ngừa của một DevOps chắc chắn sẽ là kim chỉ nam định hướng cho quá trình phát triển sự nghiệp kỹ thuật trong thời gian tới.
 
 #### Một số hình ảnh khi tham gia sự kiện
-![Event](/images/4-EventParticipated/event1.png)
+![Event](../../../images/4-EventParticipated/event1.png)

@@ -59,4 +59,4 @@ pre: " <b> 4.3. </b> "
 Cách S.H.E.P.H.E.R.D biến một camera thông thường thành một hệ thống cảnh báo vận hành thông minh bằng Computer Vision và Agentic AI không chỉ giải quyết triệt để vấn đề nhân sự tại các sự kiện đông người, mà còn gợi ra vô số ý tưởng thiết kế hệ thống điều khiển tự động cho các lĩnh vực khác trong tương lai.
 
 #### Một số hình ảnh khi tham gia sự kiện
-![Event](/images/4-EventParticipated/Event3.png)
+![Event](../../../images/4-EventParticipated/Event3.png)

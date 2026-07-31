@@ -64,5 +64,5 @@ The session that impressed me the most was the discussion on **corporate culture
 Another inspiring takeaway was the **five-level professional growth model**. Moving beyond simply completing assigned tasks toward becoming a **System Thinker**—someone who understands the entire system, evaluates operational risks, and designs long-term solutions—is the career direction I aspire to pursue as I continue developing as a software engineer.
 
 #### Event Photos
-![Event](/images/4-EventParticipated/Event2.1.png)
-![Event](/images/4-EventParticipated/Event2.2.png)
+![Event](../../../images/4-EventParticipated/Event2.1.png)
+![Event](../../../images/4-EventParticipated/Event2.2.png)
