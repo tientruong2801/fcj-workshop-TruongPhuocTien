@@ -1,347 +1,197 @@
 ---
-title: "Nhập dữ liệu (Kafka Consumer → PostgreSQL)"
+title: "News RAG Pipeline on AWS — Workshop"
 date: 2024-01-01
 weight: 5
 chapter: false
 pre: " <b> 5. </b> "
 ---
 
-# Nhập dữ liệu: Kafka Consumer → PostgreSQL
 
-Phần này bao gồm consumer service đọc bài viết thô từ Kafka và lưu vào PostgreSQL.
+# News RAG Pipeline on AWS — Workshop
 
-## Prerequisites
+## Giới thiệu dự án
 
-- Kafka đang chạy (`docker compose ps kafka`)
-- PostgreSQL đang chạy (`docker compose ps postgres`)
-- Crawler đã produce messages vào topic `news_raw` (xem [Section 5.5 Crawler](5.5-Crawler/))
+**News RAG Pipeline on AWS** là hệ thống end-to-end hoàn chỉnh tự động thu thập tin tức từ các báo điện tử Việt Nam, xử lý qua Data Warehouse (Star Schema), tạo vector embedding bằng Amazon Bedrock, và cung cấp giao diện hỏi đáp thông minh sử dụng kiến trúc RAG (Retrieval-Augmented Generation) — tất cả chạy serverless trên AWS.
 
-## Hướng dẫn chi tiết
+## Tổng quan kiến trúc
 
-1. Khởi động Kafka và PostgreSQL:
-   ```bash
-   docker compose up -d
-   ```
-
-2. Chạy consumer:
-   ```bash
-   python consumer/consumer.py
-   ```
-   Consumer sẽ tự động đọc messages từ Kafka topic `news_raw` và insert vào PostgreSQL.
-
-3. Kiểm tra log output — dòng `Inserted: <url>` xác nhận dữ liệu đã được ghi.
-
-## Test & Validation
-
-```bash
-# Kết nối database và kiểm tra
-psql -h localhost -U postgres -d newsrag
-
-# Kiểm tra bài viết đã được ingest
-SELECT source_name, title, published_at
-FROM article_metadata
-ORDER BY created_at DESC
-LIMIT 10;
-
-# Đếm tổng số bài đã ingest
-SELECT COUNT(*) AS total_articles FROM article_metadata;
+### Phát triển cục bộ (v1 - Docker Compose)
+```
+Scrapy Crawler → Kafka → PostgreSQL → ETL (Star Schema) → SentenceTransformer → Qdrant → RAG API
 ```
 
-Kết quả mong đợi: Có dữ liệu trong `article_metadata`, không có duplicate (`url_hash` unique).
+### Triển khai Production AWS Serverless (v2 - Hiện tại)
+```
+EventBridge Scheduler (01:00, 02:00 UTC)
+       │
+       ├──► Fargate Crawler (SitemapSpider) ──► SQS ──► Lambda Consumer ──► Aurora PostgreSQL
+       │
+       └──► Lambda ETL + Embedding (Bedrock Titan) ──► Aurora pgvector (HNSW Index)
+                           │
+                           ▼
+                    Lambda RAG API ◄── API Gateway ◄── Client
+                    (Bedrock embed query → pgvector search → Groq/Gemini LLM)
+```
 
-## Clean-up
+## Các thành phần chính
 
-Không cần clean-up. Consumer chỉ ghi dữ liệu, không tạo resource tạm.
+| Thành phần | Công nghệ | Mục đích |
+|------------|-----------|----------|
+| **Scheduler** | EventBridge Scheduler | Cron job hàng ngày (01:00, 02:00 UTC) |
+| **Crawler** | ECS Fargate + Scrapy SitemapSpider | Crawl sitemap báo, đẩy vào SQS |
+| **Hàng đợi** | Amazon SQS Standard | Thay thế Kafka, ~$0/tháng |
+| **Consumer** | AWS Lambda (SQS trigger) | SHA256 URL dedup, insert bài thô |
+| **ETL + Embed** | AWS Lambda (timeout 15 phút) | Clean HTML → Chunk 500 token → Bedrock Titan Embed v2 → pgvector |
+| **Kho dữ liệu** | Aurora Serverless v2 + pgvector | PostgreSQL + HNSW vector search, 2 ACU |
+| **RAG API** | Lambda + API Gateway | Embed query → Tìm kiếm vector → LLM generate |
+| **LLM** | Groq (Qwen3-8B) + Gemini 2.0 Flash | API bên ngoài, không host local |
+| **Frontend** | Next.js + FastAPI | Dashboard, Search, Chat, Explorer, Monitor |
+
+## Mục tiêu học tập
+
+Sau khi hoàn thành workshop này, bạn sẽ có thể:
+
+1. **Infrastructure as Code**: Định nghĩa hạ tầng AWS bằng Terraform (VPC, Aurora, ECS, Lambda, EventBridge)
+2. **Serverless Containers**: Đóng gói và triển khai Scrapy crawler trên ECS Fargate với ECR
+3. **Thiết kế Data Warehouse**: Triển khai Star Schema trên Aurora PostgreSQL với extension pgvector
+4. **Tự động hóa luồng công việc**: Lên lịch pipeline hàng ngày bằng EventBridge Scheduler
+5. **Hệ thống RAG**: Tích hợp vector database (pgvector) với API LLM cho hỏi đáp thông minh
+6. **Tối ưu chi phí**: Tận dụng dịch vụ serverless để giảm thiểu chi phí vận hành (~$21-26/tháng)
+
+## Các phần Workshop
+
+### Giai đoạn 1: Nền tảng & Hạ tầng
+1. [Tổng quan Workshop](5.1-Workshop-overview/) - Kiến trúc, mục tiêu, điều kiện tiên quyết, ước lượng chi phí
+2. [Điều kiện tiên quyết](5.2-Prerequisites/) - AWS CLI, Terraform, Docker, Python, Git setup
+3. [Hạ tầng dưới dạng Code (Terraform)](5.3-Infrastructure/) - VPC, Aurora pgvector, ECS, ECR, IAM, EventBridge
+
+### Giai đoạn 2: Phát triển cục bộ
+4. [Thiết lập phát triển cục bộ](5.4-Local-Dev/) - Docker Compose (PostgreSQL, Qdrant, Kafka)
+5. [Phát triển Crawler](5.5-Crawler/) - Scrapy SitemapSpider cho các trang tin tức Việt Nam
+6. [Nhập dữ liệu](5.6-Ingestion/) - Kafka Consumer → PostgreSQL lưu trữ thô
+7. [ETL & Star Schema](5.7-ETL/) - Làm sạch dữ liệu, chunking, chuyển đổi Star Schema
+8. [Vector hóa](5.8-Vectorize/) - SentenceTransformer embeddings → Qdrant
+
+### Giai đoạn 3: Triển khai AWS
+9. [Chuẩn bị triển khai AWS](5.9-AWS-Deploy/) - Docker build, ECR push, ECS Task Definitions
+10. [Fargate Crawler](5.10-Fargate-Crawler/) - EventBridge → ECS RunTask → SQS
+11. [Lambda Consumer](5.11-Lambda-Consumer/) - SQS Trigger → SHA256 Dedup → Aurora Insert
+12. [Lambda ETL + Embedding](5.12-Lambda-ETL/) - Clean → Chunk → Bedrock Titan Embed → pgvector
+
+### Giai đoạn 4: Ứng dụng RAG
+13. [RAG API](5.13-RAG-API/) - Lambda + API Gateway → Bedrock Embed Query → pgvector Search → LLM
+14. [Tích hợp Frontend](5.14-Frontend/) - Next.js Dashboard, Search, Chat, Explorer, Monitor
+
+### Giai đoạn 5: Sẵn sàng Production
+15. [Kiểm thử & Giám sát](5.15-Testing/) - Đánh giá RAGAS, CloudWatch dashboards, alerts
+16. [Tối ưu chi phí](5.16-Cost/) - Serverless tuning, Fargate Spot, right-sizing
+17. [Dọn dẹp](5.17-Cleanup/) - Terraform destroy, kiểm tra dọn dẹp thủ công
+
+## Cấu trúc dự án
+
+```
+AWS-Projects/
+├── config/
+│   └── config_site.json          # Cấu hình các trang tin tức
+├── crawler/
+│   ├── spiders/spider.py         # Scrapy SitemapSpider
+│   ├── pipelines.py              # SQS Pipeline
+│   └── settings.py               # Cài đặt Scrapy
+├── consumer/
+│   └── consumer.py               # Lambda Consumer (SQS → Aurora)
+├── etl/
+│   └── etl_warehouse.py          # ETL + Bedrock Embedding
+├── search/
+│   ├── engine.py                 # RAG Pipeline
+│   ├── retriever.py              # pgvector Search
+│   ├── generator.py              # LLM Generation (Groq/Gemini)
+│   └── schemas.py                # Pydantic Models
+├── database/
+│   └── warehouse.sql             # Star Schema + pgvector DDL
+├── vectorize/
+│   └── vectorize.py              # Vector hóa cục bộ (Legacy)
+├── main.py                       # Entry Point (crawl/etl/vectorize/full)
+├── main.tf                       # Terraform Infrastructure
+├── Dockerfile                    # Multi-stage cho ECS Fargate
+├── docker-compose.yml            # Môi trường Dev Local
+├── deploy.sh                     # Script triển khai Lambda
+├── requirements.txt              # Python Dependencies
+└── README.md                     # Tài liệu dự án
+```
+
+## So sánh kiến trúc: v1 vs v2
+
+| Thành phần | v1 (Khóa luận) | v2 (Workshop này) | Lý do |
+|------------|----------------|-------------------|-------|
+| **Crawler** | Lambda + Scrapy (timeout 15 phút) | **Fargate + SitemapSpider** | Không timeout, crawl được bài cũ qua sitemap |
+| **Stream** | Kafka trên Docker | **SQS Standard (~$0)** | Đơn giản hơn, serverless, tiết kiệm chi phí |
+| **Embedding** | Local BGE models | **Bedrock Titan Embed v2** | AWS native, serverless, vector space nhất quán |
+| **Vector DB** | Qdrant Cloud | **Aurora + pgvector** | DB thống nhất, không phụ thuộc bên ngoài |
+| **Vectorize** | Fargate Task riêng biệt | **Gộp vào ETL Lambda** | Ít dịch vụ hơn, pipeline đơn giản hơn |
+| **RAG Query Embed** | Local model (cold start 5-10s) | **Bedrock API** | Embedding nhất quán, không cold start |
+| **Chi phí/tháng** | ~$35 | **~$21-26** | Giảm ~30% |
+
+> **Nguyên tắc quan trọng:** ETL và RAG API **bắt buộc dùng cùng một embedding model** (`amazon.titan-embed-text-v2:0`). Khác model = khác vector space = tìm kiếm hỏng.
+
+## Ước lượng chi phí (Hàng tháng, ap-southeast-2)
+
+| Dịch vụ | Cấu hình | Chi phí ước tính |
+|---------|----------|------------------|
+| Aurora Serverless v2 | 2 ACU (db.t4g.medium) | ~$15-20 |
+| ECS Fargate Crawler | 0.25 vCPU, 0.5 GB, 30 phút/ngày | ~$0.50 |
+| Lambda (Consumer, ETL, RAG) | ~1M invocations, timeout 15 phút | ~$2-3 |
+| SQS Standard | ~30K messages/tháng | ~$0 |
+| API Gateway | ~10K requests/tháng | ~$0.30 |
+| Bedrock Titan Embed | ~500K tokens/tháng | ~$0.50 |
+| CloudWatch Logs | Giữ 7 ngày | ~$1-2 |
+| **Tổng cộng** | | **~$21-26/tháng** |
+
+> Chi phí thay đổi theo region và mức sử dụng. Kiểm tra [AWS Pricing Calculator](https://calculator.aws/) cho mức giá hiện tại.
+
+## Điều kiện tiên quyết
+
+- **Tài khoản AWS** với quyền cho: VPC, EC2, RDS, ECS, ECR, Lambda, SQS, EventBridge, API Gateway, Bedrock, CloudWatch, IAM
+- **AWS CLI** đã cấu hình (`aws configure`)
+- **Terraform** >= 1.5.0
+- **Docker** & **Docker Compose**
+- **Python** 3.10+
+- **Git**
+- **API Keys bên ngoài**: Groq API Key, Google Gemini API Key
+- **Truy cập Model Bedrock**: Bật `amazon.titan-embed-text-v2:0` trong AWS Console
+
+## Khởi động nhanh
+
+```bash
+# 1. Clone & Setup
+git clone <repo-url> AWS-Projects
+cd AWS-Projects
+
+# 2. Phát triển cục bộ
+make setup
+docker compose up -d
+python main.py --mode full
+
+# 3. Triển khai AWS
+cp .env.example .env
+# Chỉnh sửa .env với giá trị của bạn
+cp terraform.tfvars.example terraform.tfvars
+# Chỉnh sửa terraform.tfvars
+terraform init
+terraform apply
+
+# 4. Build & Push Docker
+docker build -t news-crawler .
+aws ecr get-login-password | docker login --username AWS --password-stdin <ECR_URL>
+docker tag news-crawler:latest <ECR_URL>/news-crawler:latest
+docker push <ECR_URL>/news-crawler:latest
+
+# 5. Triển khai Lambdas
+./deploy.sh
+
+# 6. Test RAG API
+curl -X POST <API_URL>/ask -d '{"query": "Tóm tắt tin kinh tế hôm nay"}'
+```
 
 ---
 
-## Kiến trúc
-
-```
-Kafka (news_raw topic)
-       │
-       ▼
-┌──────────────────┐
-│  Lambda Consumer │  (AWS: Lambda triggered by SQS)
-│  or              │
-│  Python Process  │  (Local: consumer/consumer.py)
-└──────────────────┘
-       │
-       ▼
-PostgreSQL (article_metadata table)
-```
-
-## Database Schema (Raw Table)
-
-```sql
--- Part of database/warehouse.sql
-CREATE TABLE IF NOT EXISTS article_metadata (
-    id              BIGSERIAL PRIMARY KEY,
-    url_hash        CHAR(64) UNIQUE NOT NULL,    -- SHA256 hex
-    url             TEXT NOT NULL,
-    source_name     VARCHAR(100),
-    source_domain   VARCHAR(100),
-    title           TEXT,
-    content         TEXT,
-    category        VARCHAR(100),
-    author          VARCHAR(200),
-    published_at    TIMESTAMPTZ,
-    crawled_at      TIMESTAMPTZ,
-    raw_html        TEXT,
-    embedded        BOOLEAN DEFAULT FALSE,        -- ETL status flag
-    created_at      TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Index cho deduplication lookups
-CREATE INDEX IF NOT EXISTS idx_article_metadata_url_hash ON article_metadata(url_hash);
-CREATE INDEX IF NOT EXISTS idx_article_metadata_published_at ON article_metadata(published_at DESC);
-```
-
-## Consumer Implementation (consumer/consumer.py)
-
-```python
-import hashlib
-import json
-import logging
-import os
-import signal
-import sys
-import time
-from contextlib import contextmanager
-from typing import Optional
-
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from kafka import KafkaConsumer
-from kafka.errors import KafkaError
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
-logger = logging.getLogger(__name__)
-
-
-class NewsConsumer:
-    """Kafka consumer ghi bài viết vào PostgreSQL với deduplication."""
-
-    def __init__(self):
-        self.running = True
-        self.consumer = None
-        self.conn = None
-        self.cur = None
-
-        # Graceful shutdown
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
-
-    def _signal_handler(self, signum, frame):
-        logger.info(f"Received signal {signum}, shutting down...")
-        self.running = False
-
-    def _connect_db(self):
-        """Kết nối PostgreSQL với retry."""
-        max_retries = 5
-        for attempt in range(max_retries):
-            try:
-                self.conn = psycopg2.connect(
-                    host=os.getenv("DB_HOST", "localhost"),
-                    port=os.getenv("DB_PORT", "5432"),
-                    database=os.getenv("DB_NAME", "newsrag"),
-                    user=os.getenv("DB_USER", "postgres"),
-                    password=os.getenv("DB_PASSWORD", "postgres"),
-                    cursor_factory=RealDictCursor,
-                )
-                self.conn.autocommit = False
-                self.cur = self.conn.cursor()
-                logger.info("Connected to PostgreSQL")
-                return
-            except Exception as e:
-                logger.warning(f"DB connection attempt {attempt + 1}/{max_retries} failed: {e}")
-                if attempt == max_retries - 1:
-                    raise
-                time.sleep(2 ** attempt)
-
-    def _connect_kafka(self):
-        """Tạo Kafka consumer."""
-        self.consumer = KafkaConsumer(
-            os.getenv("KAFKA_TOPIC_NEWS", "news_raw"),
-            bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092"),
-            group_id="newsrag-consumer-group",
-            value_deserializer=lambda m: json.loads(m.decode("utf-8")),
-            key_deserializer=lambda k: k.decode("utf-8") if k else None,
-            auto_offset_reset="earliest",
-            enable_auto_commit=True,
-            auto_commit_interval_ms=5000,
-            max_poll_records=100,
-            session_timeout_ms=30000,
-            heartbeat_interval_ms=10000,
-        )
-        logger.info("Kafka consumer connected")
-
-    def _insert_article(self, article: dict) -> bool:
-        """
-        Insert bài viết với ON CONFLICT DO NOTHING cho deduplication.
-        Returns True nếu inserted, False nếu duplicate.
-        """
-        url_hash = article.get("url_hash") or hashlib.sha256(article["url"].encode()).hexdigest()
-
-        sql = """
-            INSERT INTO article_metadata (
-                url_hash, url, source_name, source_domain, title, content,
-                category, author, published_at, crawled_at, raw_html
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (url_hash) DO NOTHING
-            RETURNING id
-        """
-        try:
-            self.cur.execute(sql, (
-                url_hash,
-                article["url"],
-                article.get("source_name"),
-                article.get("source_domain"),
-                article.get("title"),
-                article.get("content"),
-                article.get("category"),
-                article.get("author"),
-                article.get("published_at"),
-                article.get("crawled_at"),
-                article.get("raw_html", "")[:50000],  # Limit size
-            ))
-            self.conn.commit()
-            return self.cur.rowcount > 0
-        except Exception as e:
-            self.conn.rollback()
-            logger.error(f"Insert failed for {article.get('url')}: {e}")
-            return False
-
-    def process_message(self, message) -> bool:
-        """Xử lý một Kafka message."""
-        article = message.value
-        if not article or not article.get("url"):
-            logger.warning("Empty or invalid message")
-            return False
-
-        inserted = self._insert_article(article)
-        if inserted:
-            logger.info(f"Inserted: {article['url'][:80]}...")
-        else:
-            logger.debug(f"Duplicate skipped: {article['url'][:80]}...")
-        return inserted
-
-    def run(self):
-        """Main consumer loop."""
-        self._connect_db()
-        self._connect_kafka()
-
-        logger.info("Starting consumer loop...")
-        inserted_count = 0
-
-        try:
-            while self.running:
-                # Poll for messages (timeout 1s for responsive shutdown)
-                records = self.consumer.poll(timeout_ms=1000)
-
-                for topic_partition, messages in records.items():
-                    for message in messages:
-                        if not self.running:
-                            break
-                        if self.process_message(message):
-                            inserted_count += 1
-
-                        # Log progress periodically
-                        if inserted_count % 50 == 0 and inserted_count > 0:
-                            logger.info(f"Processed {inserted_count} new articles")
-
-        except KeyboardInterrupt:
-            logger.info("Interrupted by user")
-        except Exception as e:
-            logger.exception(f"Consumer error: {e}")
-        finally:
-            self.shutdown()
-
-        logger.info(f"Consumer finished. Total inserted: {inserted_count}")
-
-    def shutdown(self):
-        """Clean up connections."""
-        if self.consumer:
-            self.consumer.close()
-            logger.info("Kafka consumer closed")
-        if self.cur:
-            self.cur.close()
-        if self.conn:
-            self.conn.close()
-            logger.info("Database connection closed")
-
-
-def start_processing():
-    """Entry point cho main.py --mode consumer"""
-    consumer = NewsConsumer()
-    consumer.run()
-
-
-if __name__ == "__main__":
-    start_processing()
-```
-
-## Chạy cục bộ
-
-```bash
-# Terminal 1: Khởi động services
-docker compose up -d
-
-# Terminal 2: Chạy consumer (chạy liên tục)
-python consumer/consumer.py
-
-# Terminal 3: Chạy crawler để produce messages
-python main.py --mode crawl
-```
-
-## Xác minh dữ liệu trong PostgreSQL
-
-```bash
-# Kết nối DB
-psql -h localhost -U postgres -d newsrag
-
-# Kiểm tra bài đã insert
-SELECT source_name, title, published_at, embedded
-FROM article_metadata
-ORDER BY created_at DESC
-LIMIT 10;
-
-# Đếm theo source
-SELECT source_name, COUNT(*) as count
-FROM article_metadata
-GROUP BY source_name;
-
-# Kiểm tra duplicates (nên = 0)
-SELECT url_hash, COUNT(*)
-FROM article_metadata
-GROUP BY url_hash
-HAVING COUNT(*) > 1;
-```
-
-## AWS Lambda Version (Production)
-
-Cho AWS deployment, consumer chạy as Lambda function triggered by SQS (không phải Kafka trực tiếp). Xem [Lambda Consumer](5.11-Lambda-Consumer/) cho implementation SQS → Lambda → Aurora.
-
-Khác biệt chính:
-- **Trigger**: SQS queue (không phải Kafka)
-- **Runtime**: Python 3.11 Lambda (15 min timeout)
-- **Database**: Aurora PostgreSQL (không phải local)
-- **Secrets**: Lấy từ AWS Secrets Manager
-- **Batching**: Xử lý up to 10 messages per invocation
-
-## Xử lý sự cố
-
-| Vấn đề | Giải pháp |
-|--------|-----------|
-| `Connection refused` to Kafka | Đảm bảo Kafka healthy: `docker compose ps kafka` |
-| `Duplicate key value violates unique constraint` | Behavior mong đợi — `ON CONFLICT DO NOTHING` xử lý nó |
-| `SSL SYSCALL error: EOF detected` | DB connection dropped; consumer tự reconnect ở poll tiếp theo |
-| Consumer lag tăng | Tăng `max_poll_records`, thêm consumer instances (cùng group_id) |
-| `Message size too large` | Tăng `message.max.bytes` trong Kafka, hoặc truncate `raw_html` |
-
-
-
-**Tiếp theo:** [ETL & Star Schema](5.7-ETL/)
+**Tiếp theo:** [Tổng quan Workshop](5.1-Workshop-overview/)

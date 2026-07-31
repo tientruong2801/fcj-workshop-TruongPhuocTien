@@ -1,346 +1,197 @@
 ---
-title: "Data Ingestion (Kafka Consumer → PostgreSQL)"
+title: "Workshop"
 date: 2024-01-01
 weight: 5
 chapter: false
 pre: " <b> 5. </b> "
 ---
-# Data Ingestion: Kafka Consumer → PostgreSQL
 
-This section covers the consumer service that reads raw articles from Kafka and persists them to PostgreSQL.
+
+# News RAG Pipeline on AWS — Workshop
+
+## Project Introduction
+
+**News RAG Pipeline on AWS** is a complete end-to-end system that automatically collects news articles from Vietnamese news sites, processes them through a Data Warehouse (Star Schema), generates vector embeddings using Amazon Bedrock, and provides an intelligent Q&A interface using Retrieval-Augmented Generation (RAG) architecture — all running serverless on AWS.
+
+## Architecture Overview
+
+### Local Development (v1 - Docker Compose)
+```
+Scrapy Crawler → Kafka → PostgreSQL → ETL (Star Schema) → SentenceTransformer → Qdrant → RAG API
+```
+
+### AWS Serverless Production (v2 - Current)
+```
+EventBridge Scheduler (01:00, 02:00 UTC)
+       │
+       ├──► Fargate Crawler (SitemapSpider) ──► SQS ──► Lambda Consumer ──► Aurora PostgreSQL
+       │
+       └──► Lambda ETL + Embedding (Bedrock Titan) ──► Aurora pgvector (HNSW Index)
+                           │
+                           ▼
+                    Lambda RAG API ◄── API Gateway ◄── Client
+                    (Bedrock embed query → pgvector search → Groq/Gemini LLM)
+```
+
+## Key Components
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Scheduler** | EventBridge Scheduler | Daily cron jobs (01:00, 02:00 UTC) |
+| **Crawler** | ECS Fargate + Scrapy SitemapSpider | Crawl news sitemaps, push to SQS |
+| **Queue** | Amazon SQS Standard | Replace Kafka, ~$0/month |
+| **Consumer** | AWS Lambda (SQS trigger) | SHA256 URL dedup, insert raw articles |
+| **ETL + Embed** | AWS Lambda (15 min timeout) | Clean HTML → Chunk 500 tokens → Bedrock Titan Embed v2 → pgvector |
+| **Warehouse** | Aurora Serverless v2 + pgvector | PostgreSQL + HNSW vector search, 2 ACU |
+| **RAG API** | Lambda + API Gateway | Embed query → Vector search → LLM generate |
+| **LLM** | Groq (Qwen3-8B) + Gemini 2.0 Flash | External API, no local hosting |
+| **Frontend** | Next.js + FastAPI | Dashboard, Search, Chat, Explorer, Monitor |
+
+## Learning Objectives
+
+By the end of this workshop, you will be able to:
+
+1. **Infrastructure as Code**: Define AWS infrastructure using Terraform (VPC, Aurora, ECS, Lambda, EventBridge)
+2. **Serverless Containers**: Package and deploy Scrapy crawlers on ECS Fargate with ECR
+3. **Data Warehouse Design**: Implement Star Schema in Aurora PostgreSQL with pgvector extension
+4. **Workflow Automation**: Schedule daily pipelines using EventBridge Scheduler
+5. **RAG System**: Integrate vector database (pgvector) with LLM APIs for intelligent Q&A
+6. **Cost Optimization**: Leverage serverless services to minimize operational costs (~$21-26/month)
+
+## Workshop Sections
+
+### Phase 1: Foundation & Infrastructure
+1. [Workshop Overview](5.1-Workshop-overview/) - Architecture, objectives, prerequisites, cost estimation
+2. [Prerequisites](5.2-Prerequisites/) - AWS CLI, Terraform, Docker, Python, Git setup
+3. [Infrastructure as Code (Terraform)](5.3-Infrastructure/) - VPC, Aurora pgvector, ECS, ECR, IAM, EventBridge
+
+### Phase 2: Local Development
+4. [Local Development Setup](5.4-Local-Dev/) - Docker Compose (PostgreSQL, Qdrant, Kafka)
+5. [Crawler Development](5.5-Crawler/) - Scrapy SitemapSpider for Vietnamese news sites
+6. [Data Ingestion](5.6-Ingestion/) - Kafka Consumer → PostgreSQL raw storage
+7. [ETL & Star Schema](5.7-ETL/) - Data cleaning, chunking, Star Schema transformation
+8. [Vectorization](5.8-Vectorize/) - SentenceTransformer embeddings → Qdrant
+
+### Phase 3: AWS Deployment
+9. [AWS Deployment Prep](5.9-AWS-Deploy/) - Docker build, ECR push, ECS Task Definitions
+10. [Fargate Crawler](5.10-Fargate-Crawler/) - EventBridge → ECS RunTask → SQS
+11. [Lambda Consumer](5.11-Lambda-Consumer/) - SQS Trigger → SHA256 Dedup → Aurora Insert
+12. [Lambda ETL + Embedding](5.12-Lambda-ETL/) - Clean → Chunk → Bedrock Titan Embed → pgvector
+
+### Phase 4: RAG Application
+13. [RAG API](5.13-RAG-API/) - Lambda + API Gateway → Bedrock Embed Query → pgvector Search → LLM
+14. [Frontend Integration](5.14-Frontend/) - Next.js Dashboard, Search, Chat, Explorer, Monitor
+
+### Phase 5: Production Ready
+15. [Testing & Monitoring](5.15-Testing/) - RAGAS evaluation, CloudWatch dashboards, alerts
+16. [Cost Optimization](5.16-Cost/) - Serverless tuning, Fargate Spot, right-sizing
+17. [Clean Up](5.17-Cleanup/) - Terraform destroy, manual cleanup verification
+
+## Project Structure
+
+```
+AWS-Projects/
+├── config/
+│   └── config_site.json          # News site configurations
+├── crawler/
+│   ├── spiders/spider.py         # Scrapy SitemapSpider
+│   ├── pipelines.py              # SQS Pipeline
+│   └── settings.py               # Scrapy settings
+├── consumer/
+│   └── consumer.py               # Lambda Consumer (SQS → Aurora)
+├── etl/
+│   └── etl_warehouse.py          # ETL + Bedrock Embedding
+├── search/
+│   ├── engine.py                 # RAG Pipeline
+│   ├── retriever.py              # pgvector Search
+│   ├── generator.py              # LLM Generation (Groq/Gemini)
+│   └── schemas.py                # Pydantic Models
+├── database/
+│   └── warehouse.sql             # Star Schema + pgvector DDL
+├── vectorize/
+│   └── vectorize.py              # Legacy Local Vectorization
+├── main.py                       # Entry Point (crawl/etl/vectorize/full)
+├── main.tf                       # Terraform Infrastructure
+├── Dockerfile                    # Multi-stage for ECS Fargate
+├── docker-compose.yml            # Local Dev Environment
+├── deploy.sh                     # Lambda Deployment Script
+├── requirements.txt              # Python Dependencies
+└── README.md                     # Project Documentation
+```
+
+## Architecture Comparison: v1 vs v2
+
+| Component | v1 (Thesis) | v2 (Workshop) | Reason |
+|-----------|-------------|---------------|--------|
+| **Crawler** | Lambda + Scrapy (15 min timeout) | **Fargate + SitemapSpider** | No timeout, crawl historical via sitemap |
+| **Stream** | Kafka on Docker | **SQS Standard (~$0)** | Simpler, serverless, cost-effective |
+| **Embedding** | Local BGE models | **Bedrock Titan Embed v2** | AWS native, serverless, consistent vector space |
+| **Vector DB** | Qdrant Cloud | **Aurora + pgvector** | Unified DB, no external dependency |
+| **Vectorize** | Separate Fargate Task | **Merged into ETL Lambda** | Fewer services, simpler pipeline |
+| **RAG Query Embed** | Local Model (cold start 5-10s) | **Bedrock API** | Consistent embeddings, no cold start |
+| **Monthly Cost** | ~$35 | **~$21-26** | ~30% reduction |
+
+> **Key Principle:** ETL and RAG API **must use the same embedding model** (`amazon.titan-embed-text-v2:0`). Different models = different vector spaces = broken search.
+
+## Cost Estimation (Monthly, ap-southeast-2)
+
+| Service | Configuration | Est. Cost |
+|---------|---------------|-----------|
+| Aurora Serverless v2 | 2 ACU (db.t4g.medium) | ~$15-20 |
+| ECS Fargate Crawler | 0.25 vCPU, 0.5 GB, 30 min/day | ~$0.50 |
+| Lambda (Consumer, ETL, RAG) | ~1M invocations, 15 min timeout | ~$2-3 |
+| SQS Standard | ~30K messages/month | ~$0 |
+| API Gateway | ~10K requests/month | ~$0.30 |
+| Bedrock Titan Embed | ~500K tokens/month | ~$0.50 |
+| CloudWatch Logs | 7-day retention | ~$1-2 |
+| **Total** | | **~$21-26/month** |
+
+> Costs vary by region and usage. Check [AWS Pricing Calculator](https://calculator.aws/) for current rates.
 
 ## Prerequisites
 
-- Kafka running (`docker compose ps kafka`)
-- PostgreSQL running (`docker compose ps postgres`)
-- Crawler has produced messages to topic `news_raw` (see [Section 5.5 Crawler](5.5-Crawler/))
+- **AWS Account** with permissions for: VPC, EC2, RDS, ECS, ECR, Lambda, SQS, EventBridge, API Gateway, Bedrock, CloudWatch, IAM
+- **AWS CLI** configured (`aws configure`)
+- **Terraform** >= 1.5.0
+- **Docker** & **Docker Compose**
+- **Python** 3.10+
+- **Git**
+- **External APIs**: Groq API Key, Google Gemini API Key
+- **Bedrock Model Access**: Enable `amazon.titan-embed-text-v2:0` in AWS Console
 
-## Steps
-
-1. Start Kafka and PostgreSQL:
-   ```bash
-   docker compose up -d
-   ```
-
-2. Run the consumer:
-   ```bash
-   python consumer/consumer.py
-   ```
-   The consumer automatically reads messages from Kafka topic `news_raw` and inserts into PostgreSQL.
-
-3. Check log output — lines like `Inserted: <url>` confirm data was written.
-
-## Test & Validation
+## Quick Start
 
 ```bash
-# Connect to the database and verify
-psql -h localhost -U postgres -d newsrag
+# 1. Clone & Setup
+git clone <repo-url> AWS-Projects
+cd AWS-Projects
 
-# Check ingested articles
-SELECT source_name, title, published_at
-FROM article_metadata
-ORDER BY created_at DESC
-LIMIT 10;
-
-# Count total ingested articles
-SELECT COUNT(*) AS total_articles FROM article_metadata;
-```
-
-Expected result: Data present in `article_metadata`, no duplicates (enforced by `url_hash` unique constraint).
-
-## Clean-up
-
-None. The consumer only writes data; no temporary resources created.
-
----
-
-## Architecture
-
-```
-Kafka (news_raw topic)
-       │
-       ▼
-┌──────────────────┐
-│  Lambda Consumer │  (AWS: Lambda triggered by SQS)
-│  or              │
-│  Python Process  │  (Local: consumer/consumer.py)
-└──────────────────┘
-       │
-       ▼
-PostgreSQL (article_metadata table)
-```
-
-## Database Schema (Raw Table)
-
-```sql
--- Part of database/warehouse.sql
-CREATE TABLE IF NOT EXISTS article_metadata (
-    id              BIGSERIAL PRIMARY KEY,
-    url_hash        CHAR(64) UNIQUE NOT NULL,    -- SHA256 hex
-    url             TEXT NOT NULL,
-    source_name     VARCHAR(100),
-    source_domain   VARCHAR(100),
-    title           TEXT,
-    content         TEXT,
-    category        VARCHAR(100),
-    author          VARCHAR(200),
-    published_at    TIMESTAMPTZ,
-    crawled_at      TIMESTAMPTZ,
-    raw_html        TEXT,
-    embedded        BOOLEAN DEFAULT FALSE,        -- ETL status flag
-    created_at      TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Index for deduplication lookups
-CREATE INDEX IF NOT EXISTS idx_article_metadata_url_hash ON article_metadata(url_hash);
-CREATE INDEX IF NOT EXISTS idx_article_metadata_published_at ON article_metadata(published_at DESC);
-```
-
-## Consumer Implementation (consumer/consumer.py)
-
-```python
-import hashlib
-import json
-import logging
-import os
-import signal
-import sys
-import time
-from contextlib import contextmanager
-from typing import Optional
-
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from kafka import KafkaConsumer
-from kafka.errors import KafkaError
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
-logger = logging.getLogger(__name__)
-
-
-class NewsConsumer:
-    """Kafka consumer that writes articles to PostgreSQL with deduplication."""
-
-    def __init__(self):
-        self.running = True
-        self.consumer = None
-        self.conn = None
-        self.cur = None
-
-        # Graceful shutdown
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
-
-    def _signal_handler(self, signum, frame):
-        logger.info(f"Received signal {signum}, shutting down...")
-        self.running = False
-
-    def _connect_db(self):
-        """Establish PostgreSQL connection with retry."""
-        max_retries = 5
-        for attempt in range(max_retries):
-            try:
-                self.conn = psycopg2.connect(
-                    host=os.getenv("DB_HOST", "localhost"),
-                    port=os.getenv("DB_PORT", "5432"),
-                    database=os.getenv("DB_NAME", "newsrag"),
-                    user=os.getenv("DB_USER", "postgres"),
-                    password=os.getenv("DB_PASSWORD", "postgres"),
-                    cursor_factory=RealDictCursor,
-                )
-                self.conn.autocommit = False
-                self.cur = self.conn.cursor()
-                logger.info("Connected to PostgreSQL")
-                return
-            except Exception as e:
-                logger.warning(f"DB connection attempt {attempt + 1}/{max_retries} failed: {e}")
-                if attempt == max_retries - 1:
-                    raise
-                time.sleep(2 ** attempt)
-
-    def _connect_kafka(self):
-        """Create Kafka consumer."""
-        self.consumer = KafkaConsumer(
-            os.getenv("KAFKA_TOPIC_NEWS", "news_raw"),
-            bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092"),
-            group_id="newsrag-consumer-group",
-            value_deserializer=lambda m: json.loads(m.decode("utf-8")),
-            key_deserializer=lambda k: k.decode("utf-8") if k else None,
-            auto_offset_reset="earliest",
-            enable_auto_commit=True,
-            auto_commit_interval_ms=5000,
-            max_poll_records=100,
-            session_timeout_ms=30000,
-            heartbeat_interval_ms=10000,
-        )
-        logger.info("Kafka consumer connected")
-
-    def _insert_article(self, article: dict) -> bool:
-        """
-        Insert article with ON CONFLICT DO NOTHING for deduplication.
-        Returns True if inserted, False if duplicate.
-        """
-        url_hash = article.get("url_hash") or hashlib.sha256(article["url"].encode()).hexdigest()
-
-        sql = """
-            INSERT INTO article_metadata (
-                url_hash, url, source_name, source_domain, title, content,
-                category, author, published_at, crawled_at, raw_html
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (url_hash) DO NOTHING
-            RETURNING id
-        """
-        try:
-            self.cur.execute(sql, (
-                url_hash,
-                article["url"],
-                article.get("source_name"),
-                article.get("source_domain"),
-                article.get("title"),
-                article.get("content"),
-                article.get("category"),
-                article.get("author"),
-                article.get("published_at"),
-                article.get("crawled_at"),
-                article.get("raw_html", "")[:50000],  # Limit size
-            ))
-            self.conn.commit()
-            return self.cur.rowcount > 0
-        except Exception as e:
-            self.conn.rollback()
-            logger.error(f"Insert failed for {article.get('url')}: {e}")
-            return False
-
-    def process_message(self, message) -> bool:
-        """Process a single Kafka message."""
-        article = message.value
-        if not article or not article.get("url"):
-            logger.warning("Empty or invalid message")
-            return False
-
-        inserted = self._insert_article(article)
-        if inserted:
-            logger.info(f"Inserted: {article['url'][:80]}...")
-        else:
-            logger.debug(f"Duplicate skipped: {article['url'][:80]}...")
-        return inserted
-
-    def run(self):
-        """Main consumer loop."""
-        self._connect_db()
-        self._connect_kafka()
-
-        logger.info("Starting consumer loop...")
-        inserted_count = 0
-
-        try:
-            while self.running:
-                # Poll for messages (timeout 1s for responsive shutdown)
-                records = self.consumer.poll(timeout_ms=1000)
-
-                for topic_partition, messages in records.items():
-                    for message in messages:
-                        if not self.running:
-                            break
-                        if self.process_message(message):
-                            inserted_count += 1
-
-                        # Log progress periodically
-                        if inserted_count % 50 == 0 and inserted_count > 0:
-                            logger.info(f"Processed {inserted_count} new articles")
-
-        except KeyboardInterrupt:
-            logger.info("Interrupted by user")
-        except Exception as e:
-            logger.exception(f"Consumer error: {e}")
-        finally:
-            self.shutdown()
-
-        logger.info(f"Consumer finished. Total inserted: {inserted_count}")
-
-    def shutdown(self):
-        """Clean up connections."""
-        if self.consumer:
-            self.consumer.close()
-            logger.info("Kafka consumer closed")
-        if self.cur:
-            self.cur.close()
-        if self.conn:
-            self.conn.close()
-            logger.info("Database connection closed")
-
-
-def start_processing():
-    """Entry point for main.py --mode consumer"""
-    consumer = NewsConsumer()
-    consumer.run()
-
-
-if __name__ == "__main__":
-    start_processing()
-```
-
-## Running Locally
-
-```bash
-# Terminal 1: Start services
+# 2. Local Development
+make setup
 docker compose up -d
+python main.py --mode full
 
-# Terminal 2: Run consumer (keeps running)
-python consumer/consumer.py
+# 3. AWS Deployment
+cp .env.example .env
+# Edit .env with your values
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars
+terraform init
+terraform apply
 
-# Terminal 3: Run crawler to produce messages
-python main.py --mode crawl
+# 4. Build & Push Docker
+docker build -t news-crawler .
+aws ecr get-login-password | docker login --username AWS --password-stdin <ECR_URL>
+docker tag news-crawler:latest <ECR_URL>/news-crawler:latest
+docker push <ECR_URL>/news-crawler:latest
+
+# 5. Deploy Lambdas
+./deploy.sh
+
+# 6. Test RAG API
+curl -X POST <API_URL>/ask -d '{"query": "Tóm tắt tin kinh tế hôm nay"}'
 ```
-
-## Verifying Data in PostgreSQL
-
-```bash
-# Connect to DB
-psql -h localhost -U postgres -d newsrag
-
-# Check inserted articles
-SELECT source_name, title, published_at, embedded
-FROM article_metadata
-ORDER BY created_at DESC
-LIMIT 10;
-
-# Count by source
-SELECT source_name, COUNT(*) as count
-FROM article_metadata
-GROUP BY source_name;
-
-# Check duplicates (should be 0)
-SELECT url_hash, COUNT(*)
-FROM article_metadata
-GROUP BY url_hash
-HAVING COUNT(*) > 1;
-```
-
-## AWS Lambda Version (Production)
-
-For AWS deployment, the consumer runs as a Lambda function triggered by SQS (not Kafka directly). See [Lambda Consumer](5.11-Lambda-Consumer/) for the SQS → Lambda → Aurora implementation.
-
-Key differences:
-- **Trigger**: SQS queue (not Kafka)
-- **Runtime**: Python 3.11 Lambda (15 min timeout)
-- **Database**: Aurora PostgreSQL (not local)
-- **Secrets**: Retrieved from AWS Secrets Manager
-- **Batching**: Processes up to 10 messages per invocation
-
-## Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| `Connection refused` to Kafka | Ensure Kafka is healthy: `docker compose ps kafka` |
-| `Duplicate key value violates unique constraint` | Expected behavior — `ON CONFLICT DO NOTHING` handles it |
-| `SSL SYSCALL error: EOF detected` | DB connection dropped; consumer auto-reconnects on next poll |
-| Consumer lag growing | Increase `max_poll_records`, add consumer instances (same group_id) |
-| `Message size too large` | Increase `message.max.bytes` in Kafka, or truncate `raw_html` |
 
 ---
 
-**Next:** [ETL & Star Schema](5.7-ETL/)
+**Next:** [Workshop Overview](5.1-Workshop-overview/)
