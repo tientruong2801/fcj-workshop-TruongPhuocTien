@@ -1,58 +1,26 @@
 ---
-title: "Worklog Tuần 6"
-date: 2024-01-01
-weight: 1
+title: 'Worklog Tuần 6 (06/07 - 12/07)'
+date: 2026-07-06
+weight: 6
 chapter: false
 pre: " <b> 1.6. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Lưu ý:** Các thông tin dưới đây chỉ nhằm mục đích tham khảo, vui lòng **không sao chép nguyên văn** cho bài báo cáo của bạn kể cả warning này.
-{{% /notice %}}
-
-
 ### Mục tiêu tuần 6:
-
-* Kết nối, làm quen với các thành viên trong First Cloud AI Journey.
-* Hiểu dịch vụ AWS cơ bản, cách dùng console & CLI.
+* Đóng gói (Dockerize) ứng dụng Crawler.
+* Triển khai hệ thống Crawler Serverless lên đám mây AWS.
+* Thiết lập lịch chạy tự động bằng EventBridge.
 
 ### Các công việc cần triển khai trong tuần này:
-| Thứ | Công việc                                                                                                                                                                                   | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu                            |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- | ----------------------------------------- |
-| 2   | - Làm quen với các thành viên FCAJ <br> - Đọc và lưu ý các nội quy, quy định tại đơn vị thực tập                                                                                             | 11/08/2025   | 11/08/2025      |
-| 3   | - Tìm hiểu AWS và các loại dịch vụ <br>&emsp; + Compute <br>&emsp; + Storage <br>&emsp; + Networking <br>&emsp; + Database <br>&emsp; + ... <br>                                            | 12/08/2025   | 12/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 4   | - Tạo AWS Free Tier account <br> - Tìm hiểu AWS Console & AWS CLI <br> - **Thực hành:** <br>&emsp; + Tạo AWS account <br>&emsp; + Cài AWS CLI & cấu hình <br> &emsp; + Cách sử dụng AWS CLI | 13/08/2025   | 13/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 5   | - Tìm hiểu EC2 cơ bản: <br>&emsp; + Instance types <br>&emsp; + AMI <br>&emsp; + EBS <br>&emsp; + ... <br> - Các cách remote SSH vào EC2 <br> - Tìm hiểu Elastic IP   <br>                  | 14/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 6   | - **Thực hành:** <br>&emsp; + Tạo EC2 instance <br>&emsp; + Kết nối SSH <br>&emsp; + Gắn EBS volume                                                                                         | 15/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
+| Thứ | Công việc | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu |
+| --- | --------- | ------------ | --------------- | -------------- |
+| 2 | Tối ưu file `Dockerfile` của Crawler, đảm bảo Image size nhỏ nhất có thể | 06/07/2026 | 06/07/2026 | Docker Docs |
+| 3 - 4 | Tạo kho Amazon ECR. Cài đặt AWS CLI và Push Docker Image lên Cloud. Khởi tạo ECS Cluster, tạo Task Definition cấu hình (0.25 vCPU, 0.5GB RAM) | 07/07/2026 | 07/07/2026 | AWS ECR Console, AWS ECS Console |
+| 5 | Tạo Rule trên Amazon EventBridge Scheduler kích hoạt Crawler lúc 01:00 UTC | 10/07/2026 | 10/07/2026 | EventBridge Docs |
+| 7 | Giới hạn thời gian sống (Timeout) của Task Fargate khoảng 30 phút để tối ưu chi phí. Kích hoạt thử EventBridge, theo dõi log Crawler chạy thực tế trên CloudWatch | 11/07/2026 | 11/07/2026 | AWS ECS Docs |
 
 
 ### Kết quả đạt được tuần 6:
-* Hiểu AWS là gì và nắm được các nhóm dịch vụ cơ bản: 
-  * Compute
-  * Storage
-  * Networking 
-  * Database
-  * ...
-
-* Đã tạo và cấu hình AWS Free Tier account thành công.
-
-* Làm quen với AWS Management Console và biết cách tìm, truy cập, sử dụng dịch vụ từ giao diện web.
-
-* Cài đặt và cấu hình AWS CLI trên máy tính bao gồm:
-  * Access Key
-  * Secret Key
-  * Region mặc định
-  * ...
-
-* Sử dụng AWS CLI để thực hiện các thao tác cơ bản như:
-
-  * Kiểm tra thông tin tài khoản & cấu hình
-  * Lấy danh sách region
-  * Xem dịch vụ EC2
-  * Tạo và quản lý key pair
-  * Kiểm tra thông tin dịch vụ đang chạy
-  * ...
-
-* Có khả năng kết nối giữa giao diện web và CLI để quản lý tài nguyên AWS song song.
-* ...
-
-
+* Hoàn thành việc đóng gói ứng dụng Crawler bằng Docker và đẩy Image thành công lên kho chứa Amazon ECR.
+* Tự tay triển khai thành công cụm ECS Fargate trên Cloud, cấu hình vào Public Subnet để cào dữ liệu qua Internet Gateway.
+* Tự động hóa hoàn toàn quy trình cào tin bằng EventBridge Scheduler, kích hoạt chuẩn xác vào 01:00 AM (UTC) mỗi ngày.
+* Tối ưu hóa thành công chi phí Cloud bằng cách thiết lập giới hạn thời gian sống (Timeout) của Task Fargate tối đa 30 phút.

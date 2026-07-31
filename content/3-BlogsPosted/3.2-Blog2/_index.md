@@ -1,31 +1,35 @@
 ---
-title: "Blog 2"
+title: "Blog 2: Cost Optimization with SQS"
 date: 2024-01-01
-weight: 1
+weight: 2
 chapter: false
 pre: " <b> 3.2. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Note:** The information below is for reference purposes only. Please **do not copy verbatim** for your report, including this warning.
-{{% /notice %}}
 
-# SESSION POLICIES IN AMAZON EKS POD IDENTITY
+# System Cost Optimization: Migrating from Apache Kafka to Amazon SQS
 
-Amazon EKS Pod Identity has recently added the session policies feature, allowing you to narrow IAM permissions flexibly and precisely for each pod without needing to create many separate IAM roles. This is an important step forward that helps apply the principle of least privilege more effectively in large-scale Kubernetes environments.
+A crucial criterion when designing systems on the Cloud is **Cost Optimization**. In the first version (v1) developed in our local environment, the project used **Apache Kafka** as the message broker to stream data from the Crawler to the Database. However, when migrating to AWS, cost became a significant barrier.
 
-Key points to know:
+### The Cost Challenge with Kafka
 
-* A session policy is an inline IAM policy specified when creating or updating a Pod Identity association.
-* Effective permissions = intersection between the IAM role permissions and the session policy → the session policy can only narrow permissions, not expand them.
-* Helps avoid over-permissioning when reusing a single IAM role for multiple workloads with different needs.
-* Supports both same-account and cross-account (via IAM role chaining).
-* Significantly reduces the number of IAM roles that need to be managed, helping avoid hitting IAM quota limits in large clusters.
-* Easily configured through the AWS Management Console, AWS CLI, or AWS SDK when creating an association between a Kubernetes ServiceAccount and an IAM role.
+Apache Kafka is an incredibly powerful stream processing tool. But to run Kafka on AWS, we generally have two main choices:
+1. **Amazon MSK (Managed Streaming for Apache Kafka)**: Very expensive (can cost dozens or hundreds of USD per month).
+2. **Self-hosting Kafka on EC2**: Requires maintaining EC2 instances running 24/7, incurring fixed costs (at least ~$10-15/month) plus the overhead of system administration, security updates, and managing ZooKeeper.
 
-This feature is especially useful when you have many applications running on the same IAM role but need different permission restrictions (for example: one pod only reads a specific S3 bucket, another pod only calls certain APIs).
+Meanwhile, the data flow of NewsRAG is fundamentally **Batch processing**: The Crawler only runs 1-2 times a day (at night) and pushes around 500 - 1000 new articles. Maintaining a Kafka cluster running 24/7 just to serve this intermittent data flow is extremely wasteful.
 
-...Image...
+### The Alternative: Amazon SQS (Simple Queue Service)
 
-...Link...
+We decided to completely replace the queue architecture with **Amazon SQS**.
 
-...Guide...
+**Why SQS is the perfect fit:**
+1. **Fully Serverless & Pay-as-you-go**: SQS requires no servers. You only pay based on the number of requests. With our system's daily news volume, the number of requests easily fits within the **Free Tier** (the first 1 million requests per month are free). The queue cost was reduced to **essentially $0**.
+2. **Native Integration with AWS Lambda**: SQS can act as an "Event Source" to automatically trigger a Lambda function (Lambda Consumer). When the Crawler pushes an article to SQS, SQS automatically invokes Lambda to save it into the Database, without us having to write polling loops.
+3. **Dead-Letter Queue (DLQ)**: SQS provides a built-in DLQ mechanism. If an article is malformed and Lambda fails to save it to the DB after several retries, that message is moved to the DLQ so we can analyze it later, ensuring no data loss.
+
+### Design Evaluation
+
+By removing Kafka and switching to SQS, the system became not only lighter and easier to maintain but also saved a massive amount in operational budget. This is a practical proof that: **Choosing technology is not about picking the "fanciest" tool, but choosing the most "appropriate" one for the current scale and problem.**
+
+### Blog screenshot
+![Blog 2](/images/3-BlogsPosted/Blog2.png)

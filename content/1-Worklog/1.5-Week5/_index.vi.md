@@ -1,59 +1,29 @@
 ---
-title: "Worklog Tuần 5"
-date: 2024-01-01
-weight: 1
+title: 'Worklog Tuần 5 (29/06 - 05/07)'
+date: 2026-06-29
+weight: 5
 chapter: false
 pre: " <b> 1.5. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Lưu ý:** Các thông tin dưới đây chỉ nhằm mục đích tham khảo, vui lòng **không sao chép nguyên văn** cho bài báo cáo của bạn kể cả warning này.
-{{% /notice %}}
-
-
 ### Mục tiêu tuần 5:
-
-* Kết nối, làm quen với các thành viên trong First Cloud AI Journey.
-* Hiểu dịch vụ AWS cơ bản, cách dùng console & CLI.
+* Chuyển sang lập trình Giao diện người dùng (Frontend) bằng Next.js.
+* Hoàn thiện giao diện Dashboard giám sát và khung Chat AI tại Local.
 
 ### Các công việc cần triển khai trong tuần này:
-| Thứ | Công việc                                                                                                                                                                                   | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu                            |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- | ----------------------------------------- |
-| 2   | - Làm quen với các thành viên FCAJ <br> - Đọc và lưu ý các nội quy, quy định tại đơn vị thực tập                                                                                             | 11/08/2025   | 11/08/2025      |
-| 3   | - Tìm hiểu AWS và các loại dịch vụ <br>&emsp; + Compute <br>&emsp; + Storage <br>&emsp; + Networking <br>&emsp; + Database <br>&emsp; + ... <br>                                            | 12/08/2025   | 12/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 4   | - Tạo AWS Free Tier account <br> - Tìm hiểu AWS Console & AWS CLI <br> - **Thực hành:** <br>&emsp; + Tạo AWS account <br>&emsp; + Cài AWS CLI & cấu hình <br> &emsp; + Cách sử dụng AWS CLI | 13/08/2025   | 13/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 5   | - Tìm hiểu EC2 cơ bản: <br>&emsp; + Instance types <br>&emsp; + AMI <br>&emsp; + EBS <br>&emsp; + ... <br> - Các cách remote SSH vào EC2 <br> - Tìm hiểu Elastic IP   <br>                  | 14/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 6   | - **Thực hành:** <br>&emsp; + Tạo EC2 instance <br>&emsp; + Kết nối SSH <br>&emsp; + Gắn EBS volume                                                                                         | 15/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
+| Thứ | Công việc | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu |
+| --- | --------- | ------------ | --------------- | -------------- |
+| 2 | Khởi tạo project Next.js, cài đặt framework Tailwind CSS và Recharts | 29/06/2026 | 29/06/2026 | Next.js Docs |
+| 3 | Thiết kế bản thảo giao diện bằng Figma. Team góp ý và chỉnh sửa. | 30/06/2026 | 30/06/2026 | Figma |
+| 4 | Code giao diện Dashboard: Tạo các thẻ KPI, biểu đồ trạng thái Crawler | 30/06/2026 | 30/06/2026 | Tailwind UI |
+| 5 | Code UI AI Chat Interface: Khung chat, bong bóng tin nhắn, nút chọn LLM model | 02/07/2026 | 02/07/2026 | CSS Flexbox/Grid |
+| 6 | Code trang sematic search hiển thị cách bài báo đã lưu và hỗ trợ tìm kiếm theo key word | 03/07/2026 | 03/07/2026 | Tailwind & CSS |
+| 7 | Code UI thành phần Source Citation (hiển thị link bài báo gốc dưới câu trả lời) | 04/07/2026 | 04/07/2026 | UI/UX Patterns |
+
 
 
 ### Kết quả đạt được tuần 5:
-
-* Hiểu AWS là gì và nắm được các nhóm dịch vụ cơ bản: 
-  * Compute
-  * Storage
-  * Networking 
-  * Database
-  * ...
-
-* Đã tạo và cấu hình AWS Free Tier account thành công.
-
-* Làm quen với AWS Management Console và biết cách tìm, truy cập, sử dụng dịch vụ từ giao diện web.
-
-* Cài đặt và cấu hình AWS CLI trên máy tính bao gồm:
-  * Access Key
-  * Secret Key
-  * Region mặc định
-  * ...
-
-* Sử dụng AWS CLI để thực hiện các thao tác cơ bản như:
-
-  * Kiểm tra thông tin tài khoản & cấu hình
-  * Lấy danh sách region
-  * Xem dịch vụ EC2
-  * Tạo và quản lý key pair
-  * Kiểm tra thông tin dịch vụ đang chạy
-  * ...
-
-* Có khả năng kết nối giữa giao diện web và CLI để quản lý tài nguyên AWS song song.
-* ...
-
-
+* Ứng dụng Frontend Next.js được xây dựng thành công, hiển thị giao diện đẹp mắt và Responsive trên nhiều kích thước màn hình.
+* Dashboard giám sát được hoàn thiện với các thẻ KPI và biểu đồ, sẵn sàng nhận dữ liệu thống kê từ hệ thống Crawler.
+* Khung Chat AI (RAG Interface) hoạt động mượt mà, hỗ trợ render định dạng Markdown cho các câu trả lời phức tạp.
+* Giao diện hiển thị trích dẫn nguồn (Source Citation) được thiết kế trực quan, giúp người dùng dễ dàng đối chiếu thông tin gốc.
+* Mọi tính năng UI thiết yếu của hệ thống News RAG đã Code xong ở Local.

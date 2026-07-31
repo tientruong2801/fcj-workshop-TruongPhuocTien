@@ -1,31 +1,37 @@
 ---
-title: "Blog 1"
+title: "Blog 1: Overcoming Timeout with AWS Fargate"
 date: 2024-01-01
 weight: 1
 chapter: false
 pre: " <b> 3.1. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Note:** The information below is for reference purposes only. Please **do not copy verbatim** for your report, including this warning.
-{{% /notice %}}
 
-# SESSION POLICIES IN AMAZON EKS POD IDENTITY
+# Overcoming AWS Lambda's 15-minute Limit with ECS Fargate Architecture
 
-Amazon EKS Pod Identity has recently added the session policies feature, allowing you to narrow IAM permissions flexibly and precisely for each pod without needing to create many separate IAM roles. This is an important step forward that helps apply the principle of least privilege more effectively in large-scale Kubernetes environments.
+During the development of the **News RAG Pipeline**, one of the biggest technical challenges we faced was automating the crawling of news from major Vietnamese websites (VnExpress, Thanh Nien, VietnamNet). Initially, the system was designed to run on **AWS Lambda**.
 
-Key points to know:
+### The Problem: Execution Timeout
 
-* A session policy is an inline IAM policy specified when creating or updating a Pod Identity association.
-* Effective permissions = intersection between the IAM role permissions and the session policy → the session policy can only narrow permissions, not expand them.
-* Helps avoid over-permissioning when reusing a single IAM role for multiple workloads with different needs.
-* Supports both same-account and cross-account (via IAM role chaining).
-* Significantly reduces the number of IAM roles that need to be managed, helping avoid hitting IAM quota limits in large clusters.
-* Easily configured through the AWS Management Console, AWS CLI, or AWS SDK when creating an association between a Kubernetes ServiceAccount and an IAM role.
+AWS Lambda is a fantastic service for running serverless code. However, it has a **hard limit of 15 minutes (900 seconds)** per execution.
 
-This feature is especially useful when you have many applications running on the same IAM role but need different permission restrictions (for example: one pod only reads a specific S3 bucket, another pod only calls certain APIs).
+When our crawler parses sitemaps of news websites, the number of articles to process can reach thousands daily. Fetching HTML content, parsing data, and sending it to a queue takes a significant amount of time, especially since we must respect the origin server's rate limits to avoid being blocked. As a result, the Lambda function frequently **timed out** before completing its job.
 
-...Image...
+### The Solution: Migrating to Amazon ECS Fargate
 
-...Link...
+To solve this problem while maintaining the "Serverless" philosophy (avoiding 24/7 running EC2 instances), we decided to migrate our crawling architecture to **Amazon ECS Fargate**.
 
-...Guide...
+**Why Fargate?**
+1. **No Execution Time Limits**: Fargate tasks can run as long as needed until the crawling job is finished.
+2. **Scheduled Execution**: By integrating with **Amazon EventBridge**, we easily scheduled the Crawler to run automatically at 01:00 and 02:00 AM UTC every day.
+3. **Easy Scaling**: If we need to crawl more websites, we can simply adjust the CPU and RAM allocation for the Task (currently, 0.25 vCPU and 0.5 GB RAM are sufficient).
+4. **Docker Packaging**: The Scrapy framework and its dependencies are neatly packaged in a Docker Image and stored in **Amazon ECR**.
+
+
+### Results Achieved
+
+Migrating to ECS Fargate brought absolute stability to our data ingestion pipeline. The crawler can now run continuously for 30-40 minutes every night, fetching hundreds of new articles without any interruptions. Furthermore, the cost for Fargate is highly optimized since we only pay for the exact compute minutes the Crawler actually runs.
+
+### Blog screenshot
+![Blog 1](/images/3-BlogsPosted/Blog1.png)
+
+*Key takeaway: No single AWS service is a "silver bullet." Understanding the limits of services like Lambda and flexibly switching to more appropriate services like ECS Fargate is a crucial skill in Cloud architecture design.*

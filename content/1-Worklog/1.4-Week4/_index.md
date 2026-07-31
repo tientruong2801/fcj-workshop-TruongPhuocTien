@@ -1,57 +1,28 @@
 ---
-title: "Week 4 Worklog"
-date: 2024-01-01
-weight: 1
+title: 'Worklog Tuần 4 (22/06 - 28/06)'
+date: 2026-06-22
+weight: 4
 chapter: false
 pre: " <b> 1.4. </b> "
 ---
-{{% notice warning %}} 
-⚠️ **Note:** The following information is for reference purposes only. Please **do not copy verbatim** for your own report, including this warning.
-{{% /notice %}}
-
 
 ### Week 4 Objectives:
+* Initialize the local PostgreSQL Data Warehouse based on the agreed architecture.
+* Develop the ETL (Extract, Transform, Load) module for processing raw text data.
 
-* Connect and get acquainted with members of First Cloud AI Journey.
-* Understand basic AWS services, how to use the console & CLI.
-
-### Tasks to be carried out this week:
-| Day | Task                                                                                                                                                                                                   | Start Date | Completion Date | Reference Material                        |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | --------------- | ----------------------------------------- |
-| 2   | - Get acquainted with FCAJ members <br> - Read and take note of internship unit rules and regulations                                                                                                   | 08/11/2025 | 08/11/2025      |
-| 3   | - Learn about AWS and its types of services <br>&emsp; + Compute <br>&emsp; + Storage <br>&emsp; + Networking <br>&emsp; + Database <br>&emsp; + ... <br>                                              | 08/12/2025 | 08/12/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 4   | - Create AWS Free Tier account <br> - Learn about AWS Console & AWS CLI <br> - **Practice:** <br>&emsp; + Create AWS account <br>&emsp; + Install & configure AWS CLI <br> &emsp; + How to use AWS CLI | 08/13/2025 | 08/13/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 5   | - Learn basic EC2: <br>&emsp; + Instance types <br>&emsp; + AMI <br>&emsp; + EBS <br>&emsp; + ... <br> - SSH connection methods to EC2 <br> - Learn about Elastic IP   <br>                            | 08/14/2025 | 08/15/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 6   | - **Practice:** <br>&emsp; + Launch an EC2 instance <br>&emsp; + Connect via SSH <br>&emsp; + Attach an EBS volume                                                                                     | 08/15/2025 | 08/15/2025      | <https://cloudjourney.awsstudygroup.com/> |
-
+### Tasks to be completed this week:
+| Day | Task | Start Date | Completion Date | Reference |
+| --- | ---- | ---------- | --------------- | --------- |
+| Mon | Execute the `warehouse.sql` script to create the `fact_article`, `fact_chunks`, `fact_article_authors`, and the `dim_source`, `dim_time`, and `dim_author` tables in PostgreSQL. | 22/06/2026 | 22/06/2026 | PostgreSQL Documentation |
+| Tue | Develop the `consumer.py` module to continuously consume messages from a Kafka topic. | 23/06/2026 | 23/06/2026 | Kafka Consumer Documentation |
+| Wed | Develop the `etl_warehouse.py` module: use regular expressions to clean whitespace and remove HTML tags; implement logic to extract multiple authors, publication dates, and other metadata. | 24/06/2026 | 24/06/2026 | Python `re` Module Documentation |
+| Thu | Implement the Semantic Chunking logic to split text into 500-token chunks with a 50-token overlap. | 25/06/2026 | 25/06/2026 | LangChain Text Splitter Documentation |
+| Fri | Implement hash checking for duplicate detection and insert processed data into PostgreSQL. | 26/06/2026 | 26/06/2026 | Python `psycopg2` Documentation |
+| Sat | Perform end-to-end local testing: Crawler → Kafka → ETL → PostgreSQL, and verify the stored data. | 27/06/2026 | 27/06/2026 | Local Development Environment |
 
 ### Week 4 Achievements:
+* Successfully completed the ETL pipeline in the local environment, ensuring data integrity from web crawling to data storage.
+* Successfully cleaned raw text by removing HTML tags and redundant whitespace using regular expressions.
+* Successfully implemented the Semantic Chunking algorithm, splitting text into 500-token chunks with a 50-token overlap to preserve contextual information.
+* Successfully stored the processed data in the PostgreSQL data warehouse using the `psycopg2` library, ensuring data consistency and integrity.
 
-* Understood what AWS is and mastered the basic service groups: 
-  * Compute
-  * Storage
-  * Networking 
-  * Database
-  * ...
-
-* Successfully created and configured an AWS Free Tier account.
-
-* Became familiar with the AWS Management Console and learned how to find, access, and use services via the web interface.
-
-* Installed and configured AWS CLI on the computer, including:
-  * Access Key
-  * Secret Key
-  * Default Region
-  * ...
-
-* Used AWS CLI to perform basic operations such as:
-
-  * Check account & configuration information
-  * Retrieve the list of regions
-  * View EC2 service
-  * Create and manage key pairs
-  * Check information about running services
-  * ...
-
-* Acquired the ability to connect between the web interface and CLI to manage AWS resources in parallel.
-* ...

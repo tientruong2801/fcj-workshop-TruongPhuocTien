@@ -1,57 +1,28 @@
 ---
-title: "Week 5 Worklog"
-date: 2024-01-01
-weight: 1
+title: 'Worklog Tuần 5 (29/06 - 05/07)'
+date: 2026-06-29
+weight: 5
 chapter: false
 pre: " <b> 1.5. </b> "
 ---
-{{% notice warning %}} 
-⚠️ **Note:** The following information is for reference purposes only. Please **do not copy verbatim** for your own report, including this warning.
-{{% /notice %}}
-
-
 ### Week 5 Objectives:
+* Begin frontend development using Next.js.
+* Complete the monitoring dashboard and AI chat interface in the local environment.
 
-* Connect and get acquainted with members of First Cloud AI Journey.
-* Understand basic AWS services, how to use the console & CLI.
-
-### Tasks to be carried out this week:
-| Day | Task                                                                                                                                                                                                   | Start Date | Completion Date | Reference Material                        |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | --------------- | ----------------------------------------- |
-| 2   | - Get acquainted with FCAJ members <br> - Read and take note of internship unit rules and regulations                                                                                                   | 08/11/2025 | 08/11/2025      |
-| 3   | - Learn about AWS and its types of services <br>&emsp; + Compute <br>&emsp; + Storage <br>&emsp; + Networking <br>&emsp; + Database <br>&emsp; + ... <br>                                              | 08/12/2025 | 08/12/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 4   | - Create AWS Free Tier account <br> - Learn about AWS Console & AWS CLI <br> - **Practice:** <br>&emsp; + Create AWS account <br>&emsp; + Install & configure AWS CLI <br> &emsp; + How to use AWS CLI | 08/13/2025 | 08/13/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 5   | - Learn basic EC2: <br>&emsp; + Instance types <br>&emsp; + AMI <br>&emsp; + EBS <br>&emsp; + ... <br> - SSH connection methods to EC2 <br> - Learn about Elastic IP   <br>                            | 08/14/2025 | 08/15/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 6   | - **Practice:** <br>&emsp; + Launch an EC2 instance <br>&emsp; + Connect via SSH <br>&emsp; + Attach an EBS volume                                                                                     | 08/15/2025 | 08/15/2025      | <https://cloudjourney.awsstudygroup.com/> |
-
+### Tasks to be completed this week:
+| Day | Task | Start Date | Completion Date | Reference |
+| --- | ---- | ---------- | --------------- | --------- |
+| Mon | Initialize the Next.js project and install Tailwind CSS and Recharts. | 29/06/2026 | 29/06/2026 | Next.js Documentation |
+| Tue | Design the initial UI prototype in Figma and refine it based on team feedback. | 30/06/2026 | 30/06/2026 | Figma |
+| Wed | Develop the Dashboard interface, including KPI cards and crawler status charts. | 30/06/2026 | 30/06/2026 | Tailwind UI |
+| Thu | Develop the AI Chat interface, including the chat window, message bubbles, and LLM model selection button. | 02/07/2026 | 02/07/2026 | CSS Flexbox/Grid |
+| Fri | Develop the Semantic Search page to display stored news articles and support keyword-based searching. | 03/07/2026 | 03/07/2026 | Tailwind CSS |
+| Sat | Develop the Source Citation component to display links to the original news articles below each AI response. | 04/07/2026 | 04/07/2026 | UI/UX Patterns |
 
 ### Week 5 Achievements:
+* Successfully developed the Next.js frontend application with a responsive and user-friendly interface that adapts to different screen sizes.
+* Completed the monitoring dashboard with KPI cards and visualization charts, ready to receive statistical data from the crawler system.
+* Successfully implemented the AI Chat (RAG) interface with smooth interaction and Markdown rendering support for complex responses.
+* Designed and implemented an intuitive Source Citation component, enabling users to easily access and verify the original news sources.
+* Completed all core UI components of the News RAG system in the local development environment.
 
-* Understood what AWS is and mastered the basic service groups: 
-  * Compute
-  * Storage
-  * Networking 
-  * Database
-  * ...
-
-* Successfully created and configured an AWS Free Tier account.
-
-* Became familiar with the AWS Management Console and learned how to find, access, and use services via the web interface.
-
-* Installed and configured AWS CLI on the computer, including:
-  * Access Key
-  * Secret Key
-  * Default Region
-  * ...
-
-* Used AWS CLI to perform basic operations such as:
-
-  * Check account & configuration information
-  * Retrieve the list of regions
-  * View EC2 service
-  * Create and manage key pairs
-  * Check information about running services
-  * ...
-
-* Acquired the ability to connect between the web interface and CLI to manage AWS resources in parallel.
-* ...

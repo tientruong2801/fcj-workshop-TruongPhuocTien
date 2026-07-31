@@ -1,59 +1,27 @@
 ---
-title: "Worklog Tuần 4"
-date: 2024-01-01
-weight: 1
+title: 'Worklog Tuần 4 (22/06 - 28/06)'
+date: 2026-06-22
+weight: 4
 chapter: false
 pre: " <b> 1.4. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Lưu ý:** Các thông tin dưới đây chỉ nhằm mục đích tham khảo, vui lòng **không sao chép nguyên văn** cho bài báo cáo của bạn kể cả warning này.
-{{% /notice %}}
-
-
 ### Mục tiêu tuần 4:
-
-* Kết nối, làm quen với các thành viên trong First Cloud AI Journey.
-* Hiểu dịch vụ AWS cơ bản, cách dùng console & CLI.
+* Khởi tạo Data Warehouse (PostgreSQL) local theo kiến trúc đã thống nhất.
+* Lập trình module ETL (Extract, Transform, Load) xử lý văn bản thô.
 
 ### Các công việc cần triển khai trong tuần này:
-| Thứ | Công việc                                                                                                                                                                                   | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu                            |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- | ----------------------------------------- |
-| 2   | - Làm quen với các thành viên FCAJ <br> - Đọc và lưu ý các nội quy, quy định tại đơn vị thực tập                                                                                             | 11/08/2025   | 11/08/2025      |
-| 3   | - Tìm hiểu AWS và các loại dịch vụ <br>&emsp; + Compute <br>&emsp; + Storage <br>&emsp; + Networking <br>&emsp; + Database <br>&emsp; + ... <br>                                            | 12/08/2025   | 12/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 4   | - Tạo AWS Free Tier account <br> - Tìm hiểu AWS Console & AWS CLI <br> - **Thực hành:** <br>&emsp; + Tạo AWS account <br>&emsp; + Cài AWS CLI & cấu hình <br> &emsp; + Cách sử dụng AWS CLI | 13/08/2025   | 13/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 5   | - Tìm hiểu EC2 cơ bản: <br>&emsp; + Instance types <br>&emsp; + AMI <br>&emsp; + EBS <br>&emsp; + ... <br> - Các cách remote SSH vào EC2 <br> - Tìm hiểu Elastic IP   <br>                  | 14/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 6   | - **Thực hành:** <br>&emsp; + Tạo EC2 instance <br>&emsp; + Kết nối SSH <br>&emsp; + Gắn EBS volume                                                                                         | 15/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
+| Thứ | Công việc | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu |
+| --- | --------- | ------------ | --------------- | -------------- |
+| 2 | Chạy script `warehouse.sql` khởi tạo bảng fact_article, fact_chunks, fact_article_authors và các bảng dim_source, dim_time, dim_author trong PostgreSQL | 22/06/2026 | 22/06/2026 | PostgreSQL Docs |
+| 3 | Code file `consumer.py` đọc liên tục các message từ Kafka topic | 23/06/2026 | 23/06/2026 | Kafka Consumer |
+| 4 | Code module `etl_warehouse.py`: Dùng Regex làm sạch khoảng trắng và HTML tag. Thêm logic tách nhiều tên tác giả, ngày xuất bản,... | 24/06/2026 | 24/06/2026 | Python `re` module |
+| 5 | Code logic Semantic Chunking (chia đoạn văn 500 tokens, chênh nhau 50 tokens) | 25/06/2026 | 25/06/2026 | Langchain Splitter |
+| 6 | Code logic check hash tồn tại và thực hiện lệnh Insert vào PostgreSQL | 26/06/2026 | 26/06/2026 | Python `psycopg2` |
+| 7 | Test toàn trình (Local): Bật Crawler -> Kafka -> Hàm ETL -> Xem Data trong Postgres | 27/06/2026 | 27/06/2026 | Local Environment |
 
 
 ### Kết quả đạt được tuần 4:
-
-* Hiểu AWS là gì và nắm được các nhóm dịch vụ cơ bản: 
-  * Compute
-  * Storage
-  * Networking 
-  * Database
-  * ...
-
-* Đã tạo và cấu hình AWS Free Tier account thành công.
-
-* Làm quen với AWS Management Console và biết cách tìm, truy cập, sử dụng dịch vụ từ giao diện web.
-
-* Cài đặt và cấu hình AWS CLI trên máy tính bao gồm:
-  * Access Key
-  * Secret Key
-  * Region mặc định
-  * ...
-
-* Sử dụng AWS CLI để thực hiện các thao tác cơ bản như:
-
-  * Kiểm tra thông tin tài khoản & cấu hình
-  * Lấy danh sách region
-  * Xem dịch vụ EC2
-  * Tạo và quản lý key pair
-  * Kiểm tra thông tin dịch vụ đang chạy
-  * ...
-
-* Có khả năng kết nối giữa giao diện web và CLI để quản lý tài nguyên AWS song song.
-* ...
-
-
+* Pipeline xử lý ETL hoàn thiện 100% tại máy cá nhân, đảm bảo tính toàn vẹn của dữ liệu từ lúc cào đến lúc lưu trữ.
+* Văn bản thô được làm sạch triệt để (loại bỏ tag HTML, khoảng trắng dư thừa) bằng module xử lý Regex.
+* Thuật toán Semantic Chunking hoạt động chính xác, cắt văn bản thành các đoạn 500 tokens với độ chênh 50 tokens để bảo toàn ngữ cảnh.
+* Dữ liệu sau khi xử lý được lưu trữ nguyên vẹn, an toàn vào cơ sở dữ liệu quan hệ PostgreSQL thông qua `psycopg2`.

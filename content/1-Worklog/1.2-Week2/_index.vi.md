@@ -1,59 +1,26 @@
 ---
-title: "Worklog Tuần 2"
-date: 2024-01-01
-weight: 1
+title: 'Worklog Tuần 2 (08/06 - 14/06)'
+date: 2026-06-08
+weight: 2
 chapter: false
 pre: " <b> 1.2. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Lưu ý:** Các thông tin dưới đây chỉ nhằm mục đích tham khảo, vui lòng **không sao chép nguyên văn** cho bài báo cáo của bạn kể cả warning này.
-{{% /notice %}}
-
-
 ### Mục tiêu tuần 2:
-
-* Kết nối, làm quen với các thành viên trong First Cloud AI Journey.
-* Hiểu dịch vụ AWS cơ bản, cách dùng console & CLI.
+* Họp bàn cùng 3 thành viên trong nhóm để chốt kiến trúc tổng thể và công cụ sử dụng.
+* Phân chia rõ ràng Task List và trách nhiệm (Role) cho từng thành viên.
+* Thống nhất mô hình dữ liệu (Data Model) và luồng giao tiếp giữa các module.
 
 ### Các công việc cần triển khai trong tuần này:
-| Thứ | Công việc                                                                                                                                                                                   | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu                            |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- | ----------------------------------------- |
-| 2   | - Làm quen với các thành viên FCAJ <br> - Đọc và lưu ý các nội quy, quy định tại đơn vị thực tập                                                                                             | 11/08/2025   | 11/08/2025      |
-| 3   | - Tìm hiểu AWS và các loại dịch vụ <br>&emsp; + Compute <br>&emsp; + Storage <br>&emsp; + Networking <br>&emsp; + Database <br>&emsp; + ... <br>                                            | 12/08/2025   | 12/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 4   | - Tạo AWS Free Tier account <br> - Tìm hiểu AWS Console & AWS CLI <br> - **Thực hành:** <br>&emsp; + Tạo AWS account <br>&emsp; + Cài AWS CLI & cấu hình <br> &emsp; + Cách sử dụng AWS CLI | 13/08/2025   | 13/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 5   | - Tìm hiểu EC2 cơ bản: <br>&emsp; + Instance types <br>&emsp; + AMI <br>&emsp; + EBS <br>&emsp; + ... <br> - Các cách remote SSH vào EC2 <br> - Tìm hiểu Elastic IP   <br>                  | 14/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 6   | - **Thực hành:** <br>&emsp; + Tạo EC2 instance <br>&emsp; + Kết nối SSH <br>&emsp; + Gắn EBS volume                                                                                         | 15/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-
+| Thứ | Công việc | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu |
+| --- | --------- | ------------ | --------------- | -------------- |
+| 2 | Họp nhóm (Buổi 1): Trình bày kết quả research AWS, chốt dùng kiến trúc Event-Driven | 08/06/2026 | 08/06/2026 | Team Meeting |
+| 3 | Chốt công cụ: Chọn Fargate cho Crawler (thay vì EC2) và SQS cho Message Queue | 09/06/2026 | 09/06/2026 | Architecture Diagram |
+| 4 | Phân chia công việc: Nhận nhiệm vụ Crawler, ETL, Frontend UI và Deploy Crawler và SQS | 10/06/2026 | 10/06/2026 | Trello / Jira |
+| 5 | Họp nhóm (Buổi 2): Thiết kế kiến trúc Data Warehouse và mô hình Star Schema | 11/06/2026 | 13/06/2026 | DW Fundamentals |
+| 6 | Chốt API Contract: Quy định định dạng JSON trả về giữa Frontend và Backend | 14/06/2026 | 14/06/2026 | API Specs |
 
 ### Kết quả đạt được tuần 2:
-
-* Hiểu AWS là gì và nắm được các nhóm dịch vụ cơ bản: 
-  * Compute
-  * Storage
-  * Networking 
-  * Database
-  * ...
-
-* Đã tạo và cấu hình AWS Free Tier account thành công.
-
-* Làm quen với AWS Management Console và biết cách tìm, truy cập, sử dụng dịch vụ từ giao diện web.
-
-* Cài đặt và cấu hình AWS CLI trên máy tính bao gồm:
-  * Access Key
-  * Secret Key
-  * Region mặc định
-  * ...
-
-* Sử dụng AWS CLI để thực hiện các thao tác cơ bản như:
-
-  * Kiểm tra thông tin tài khoản & cấu hình
-  * Lấy danh sách region
-  * Xem dịch vụ EC2
-  * Tạo và quản lý key pair
-  * Kiểm tra thông tin dịch vụ đang chạy
-  * ...
-
-* Có khả năng kết nối giữa giao diện web và CLI để quản lý tài nguyên AWS song song.
-* ...
-
-
+* Chốt hạ thành công bản thiết kế kiến trúc Serverless toàn diện với sự đồng thuận của cả 4 thành viên.
+* Xác định rõ ràng khối lượng công việc cá nhân: Lập trình Crawler, xử lý ETL, phát triển Giao diện Web và cấu hình deploy Fargate.
+* Hoàn thành bản thiết kế Data Warehouse theo chuẩn Star Schema với 2 bảng fact và 3 bảng dim.
+* Thống nhất được API Contract và các giao thức giao tiếp (Kafka/SQS) để các thành viên có thể code độc lập mà không bị xung đột.

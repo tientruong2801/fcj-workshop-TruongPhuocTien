@@ -1,47 +1,46 @@
 ---
-title: "Sharing and Feedback"
+title: "Feedback and Suggestions"
 date: 2024-01-01
 weight: 7
 chapter: false
 pre: " <b> 7. </b> "
 ---
 
-{{% notice warning %}}
-⚠️ **Note:** The information below is for reference purposes only. Please **do not copy verbatim** for your report, including this warning.
-{{% /notice %}}
-
-> Here, you can freely share your personal opinions about your experience participating in the First Cloud AI Journey program. This will help the FCAJ team improve any shortcomings based on the following aspects:
+> This section provides an opportunity to share personal experiences and constructive feedback about the First Cloud AI Journey program to help the FCAJ team further improve future internship programs.
 
 ### Overall Evaluation
 
-**1. Working Environment**  
-The working environment is very friendly and open. FCAJ members are always willing to help whenever I encounter difficulties, even outside working hours. The workspace is tidy and comfortable, helping me focus better. However, I think it would be nice to have more social gatherings or team bonding activities to strengthen relationships.
+### 1. Working Environment
+The working environment was both professional and welcoming. Everyone in the program was approachable and willing to provide support whenever I encountered challenges during the project. Working in a collaborative team also helped me improve my communication skills and become more proactive in solving problems. In addition, the program regularly organized technical events and sharing sessions, allowing different teams to exchange ideas and learn from one another.
 
-**2. Support from Mentor / Team Admin**  
-The mentor provides very detailed guidance, explains clearly when I don’t understand, and always encourages me to ask questions. The admin team supports administrative tasks, provides necessary documents, and creates favorable conditions for me to work effectively. I especially appreciate that the mentor allows me to try and solve problems myself instead of just giving the answer.
+### 2. Mentor and Team Admin Support
+The mentors and team administrators were enthusiastic, energetic, and always willing to help. They provided detailed guidance throughout the internship and offered valuable feedback that greatly contributed to the success of our project. Instead of simply giving answers, they encouraged us to think critically and develop our own solutions.
 
-**3. Relevance of Work to Academic Major**  
-The tasks I was assigned align well with the knowledge I learned at university, while also introducing me to new areas I had never encountered before. This allowed me to both strengthen my foundational knowledge and gain practical skills.
+### 3. Relevance to My Academic Major
+The assigned tasks closely matched both my Computer Science background and my career interest in Data Engineering. Working on the News RAG project allowed me to apply knowledge from database systems, web development, and data processing to real-world problems such as automated news crawling, data warehouse design using the Star Schema approach, and deploying applications on AWS cloud infrastructure.
 
-**4. Learning & Skill Development Opportunities**  
-During the internship, I learned many new skills such as using project management tools, teamwork skills, and professional communication in a corporate environment. The mentor also shared valuable real-world experiences that helped me better plan my career path.
+### 4. Learning and Skill Development Opportunities
+The program provided numerous opportunities to learn through workshops, seminars, and hands-on project development. Besides improving my technical abilities, I also strengthened my teamwork, time management, progress reporting, and presentation skills. These experiences are invaluable for my future career as a software engineer.
 
-**5. Company Culture & Team Spirit**  
-The company culture is very positive: everyone respects each other, works seriously but still keeps things enjoyable. When there are urgent projects, everyone works together and supports one another regardless of their position. This made me feel like a real part of the team, even as an intern.
+### 5. Team Culture and Collaboration
+The team culture was very positive and collaborative. Everyone treated each other with respect while maintaining a productive yet enjoyable working atmosphere. During challenging periods, team members actively supported one another regardless of their individual responsibilities. What impressed me most was the willingness of everyone to share knowledge and work together to solve technical problems rather than working in isolation.
 
-**6. Internship Policies / Benefits**  
-The company provides an internship allowance and offers flexible working hours when needed. In addition, having the opportunity to join internal training sessions is a big plus.
-
----
+### 6. Internship Benefits and Support
+The program provided extensive learning materials related to AWS cloud technologies, which are extremely valuable for a Data Engineering student. In addition, receiving guidance and practical advice from experienced engineers gave me a much stronger foundation for my future career.
 
 ### Additional Questions
-- What did you find **most satisfying** during your internship?  
-- What do you think the company **should improve** for future interns?  
-- If recommending to a friend, would you **suggest they intern here**? Why or why not?  
 
----
+* **What was the most satisfying part of your internship?**  
+  The most rewarding experience was participating in the development of a complete end-to-end project. Building data processing pipelines, designing the web interface, and successfully deploying an automated news ingestion system on AWS significantly increased my confidence in applying my technical knowledge to real-world software development.
 
-### Suggestions & Expectations
-- Do you have any suggestions to improve the internship experience?  
-- Would you like to continue this program in the future?  
-- Any other comments (free sharing):
+* **What do you think could be improved for future interns?**  
+  It would be beneficial to organize more in-depth technical talks on topics such as AWS cost optimization and Infrastructure as Code (e.g., Terraform or AWS CDK) during the early stages of the internship. These sessions would help interns develop a stronger understanding of modern cloud architecture and infrastructure management.
+
+* **Would you recommend this internship program to your friends? Why?**  
+  **Absolutely.** I would highly recommend this program to students who want to move beyond classroom theory and gain practical experience with cloud computing, software engineering, and collaborative project development. The opportunity to work with experienced mentors on real-world projects makes the program especially valuable.
+
+### Suggestions and Future Expectations
+
+* **Future Expectations:** I sincerely hope to have the opportunity to continue participating in the First Cloud AI Journey program or collaborate with the company on more advanced projects related to Data Engineering, Artificial Intelligence, and Cloud Architecture in the future.
+
+* **Additional Feedback:** I would like to express my sincere appreciation to the First Cloud AI Journey organizing team and all the mentors for their continuous support, guidance, and encouragement throughout the eight-week internship. Their mentorship played a significant role in helping me successfully complete the program while developing both my technical expertise and professional mindset.

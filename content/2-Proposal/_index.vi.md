@@ -5,104 +5,99 @@ weight: 2
 chapter: false
 pre: " <b> 2. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Lưu ý:** Các thông tin dưới đây chỉ nhằm mục đích tham khảo, vui lòng **không sao chép nguyên văn** cho bài báo cáo của bạn kể cả warning này.
-{{% /notice %}}
 
-Tại phần này, bạn cần tóm tắt các nội dung trong workshop mà bạn **dự tính** sẽ làm.
+# News RAG Pipeline trên AWS
+## Đường ống dữ liệu Serverless Hướng sự kiện với RAG cho hỏi đáp tin tức thông minh
 
-# IoT Weather Platform for Lab Research  
-## Giải pháp AWS Serverless hợp nhất cho giám sát thời tiết thời gian thực  
+### 1. Tóm tắt điều hành
+News RAG Pipeline là hệ thống xây dựng ứng dụng hỏi đáp tin tức thông minh, tự động thu thập bài báo từ các trang tin Việt Nam (VnExpress, Thanh Niên, VietnamNet), xử lý qua Data Warehouse (Star Schema), tạo vector embedding bằng Amazon Bedrock Titan Embed v2, và cho phép người dùng đặt câu hỏi bằng ngôn ngữ tự nhiên thông qua kiến trúc RAG (Retrieval-Augmented Generation) — hoàn toàn serverless trên AWS. Hệ thống là minh chứng thực tế về tích hợp dịch vụ serverless AWS với LLM API (Groq, Gemini) thông qua cơ chế xử lý hướng sự kiện (Event-Driven) để tạo nền tảng tra cứu thông tin AI.
 
-### 1. Tóm tắt điều hành  
-IoT Weather Platform được thiết kế dành cho nhóm *ITea Lab* tại TP. Hồ Chí Minh nhằm nâng cao khả năng thu thập và phân tích dữ liệu thời tiết. Nền tảng hỗ trợ tối đa 5 trạm thời tiết, có khả năng mở rộng lên 10–15 trạm, sử dụng thiết bị biên Raspberry Pi kết hợp cảm biến ESP32 để truyền dữ liệu qua MQTT. Nền tảng tận dụng các dịch vụ AWS Serverless để cung cấp giám sát thời gian thực, phân tích dự đoán và tiết kiệm chi phí, với quyền truy cập giới hạn cho 5 thành viên phòng lab thông qua Amazon Cognito.  
+### 2. Tuyên bố vấn đề
+#### Vấn đề hiện tại
+Theo dõi tin tức từ nhiều nguồn đòi hỏi đọc và tìm kiếm thủ công qua vô số bài báo. Không có hệ thống tập trung cho phép người dùng đặt câu hỏi về tin tức mới nhất và nhận câu trả lời AI có trích dẫn nguồn. Các giải pháp hiện có như ChatGPT thiếu ngữ cảnh tin tức cập nhật.
 
-### 2. Tuyên bố vấn đề  
-*Vấn đề hiện tại*  
-Các trạm thời tiết hiện tại yêu cầu thu thập dữ liệu thủ công, khó quản lý khi có nhiều trạm. Không có hệ thống tập trung cho dữ liệu hoặc phân tích thời gian thực, và các nền tảng bên thứ ba thường tốn kém và quá phức tạp.  
+#### Giải pháp
+News RAG Pipeline tự động hóa toàn bộ quy trình: (1) Scrapy crawler trên ECS Fargate thu thập bài báo từ các trang báo và đẩy vào SQS, (2) SQS tự động kích hoạt Lambda ETL xử lý HTML thô thành Star Schema, băm dữ liệu chống trùng lặp, và tạo vector embedding qua Amazon Bedrock, (3) lưu trữ dữ liệu vào Aurora PostgreSQL thông qua RDS Proxy, và (4) Lambda RAG API nhận câu hỏi ngôn ngữ tự nhiên, tìm kiếm tương đồng vector, và sinh câu trả lời dùng Groq (Qwen3-8B, Llama 3.1) hoặc Gemini 2.0 Flash.
 
-*Giải pháp*  
-Nền tảng sử dụng AWS IoT Core để tiếp nhận dữ liệu MQTT, AWS Lambda và API Gateway để xử lý, Amazon S3 để lưu trữ (bao gồm data lake), và AWS Glue Crawlers cùng các tác vụ ETL để trích xuất, chuyển đổi, tải dữ liệu từ S3 data lake sang một S3 bucket khác để phân tích. AWS Amplify với Next.js cung cấp giao diện web, và Amazon Cognito đảm bảo quyền truy cập an toàn. Tương tự như Thingsboard và CoreIoT, người dùng có thể đăng ký thiết bị mới và quản lý kết nối, nhưng nền tảng này hoạt động ở quy mô nhỏ hơn và phục vụ mục đích sử dụng nội bộ. Các tính năng chính bao gồm bảng điều khiển thời gian thực, phân tích xu hướng và chi phí vận hành thấp.  
+#### Lợi ích và hoàn vốn đầu tư
+Giải pháp cung cấp nền tảng học tập về kiến trúc serverless AWS, hệ thống RAG và MLOps. Lợi ích chính: tổng hợp tin tức tự động loại bỏ tìm kiếm thủ công, hỏi đáp AI có trích dẫn nguồn tiết kiệm thời gian nghiên cứu, trải nghiệm thực tế với hạ tầng mạng VPC/Endpoint. Chi phí hàng tháng khoảng $21-26 USD.
 
-*Lợi ích và hoàn vốn đầu tư (ROI)*  
-Giải pháp tạo nền tảng cơ bản để các thành viên phòng lab phát triển một nền tảng IoT lớn hơn, đồng thời cung cấp nguồn dữ liệu cho những người nghiên cứu AI phục vụ huấn luyện mô hình hoặc phân tích. Nền tảng giảm bớt báo cáo thủ công cho từng trạm thông qua hệ thống tập trung, đơn giản hóa quản lý và bảo trì, đồng thời cải thiện độ tin cậy dữ liệu. Chi phí hàng tháng ước tính 0,66 USD (theo AWS Pricing Calculator), tổng cộng 7,92 USD cho 12 tháng. Tất cả thiết bị IoT đã được trang bị từ hệ thống trạm thời tiết hiện tại, không phát sinh chi phí phát triển thêm. Thời gian hoàn vốn 6–12 tháng nhờ tiết kiệm đáng kể thời gian thao tác thủ công.  
+### 3. Kiến trúc giải pháp
+Nền tảng sử dụng kiến trúc Event-Driven Serverless trên AWS với hai luồng hoạt động chính:
+*   **Giai đoạn Thu thập (Data Ingestion):** EventBridge Scheduler kích hoạt ECS Fargate crawler hàng ngày lúc 01:00 UTC. Crawler chạy khoảng 30 phút, thu thập bài viết mới và đẩy trực tiếp vào Amazon SQS.
+*   **Giai đoạn ETL & Phục vụ (ETL + RAG):** SQS tự động kích hoạt hàm Lambda ETL ngay khi có message mới. Lambda làm sạch HTML, chunk text 500 tokens, tạo embedding 1024 chiều qua Bedrock Titan Embed v2 thông qua VPC Endpoint, sau đó lưu vector vào Aurora pgvector (HNSW index) thông qua RDS Proxy. Lambda RAG API (đứng sau API Gateway) nhúng câu hỏi người dùng, tìm kiếm trên pgvector và sinh câu trả lời qua LLM.
 
-### 3. Kiến trúc giải pháp  
-Nền tảng áp dụng kiến trúc AWS Serverless để quản lý dữ liệu từ 5 trạm dựa trên Raspberry Pi, có thể mở rộng lên 15 trạm. Dữ liệu được tiếp nhận qua AWS IoT Core, lưu trữ trong S3 data lake và xử lý bởi AWS Glue Crawlers và ETL jobs để chuyển đổi và tải vào một S3 bucket khác cho mục đích phân tích. Lambda và API Gateway xử lý bổ sung, trong khi Amplify với Next.js cung cấp bảng điều khiển được bảo mật bởi Cognito.  
+#### Các dịch vụ AWS sử dụng
+- **Networking & Security:** Custom VPC (Public/Private Subnets), Interface VPC Endpoints (cho SQS, ECR, Bedrock), IAM Roles với least-privilege policies.
+- **Amazon ECS Fargate**: Chạy Scrapy crawler (0.25 vCPU, 0.5 GB, thời gian sống ~30 phút).
+- **Amazon SQS Standard**: Event-driven buffer, tự động gọi Lambda xử lý.
+- **AWS Lambda**: Consumer (SQS → Aurora), ETL + Bedrock Embed, RAG API.
+- **Amazon Aurora Serverless v2 & RDS Proxy**: PostgreSQL 15.4 với pgvector extension; dùng RDS Proxy để quản lý connection pool.
+- **Amazon Bedrock**: Titan Embed Text v2 (1024d) cho vector embeddings.
+- **Amazon API Gateway**: REST API frontend cho RAG queries.
+- **Amazon EventBridge Scheduler**: Cron trigger kích hoạt crawler hàng ngày.
+- **Amazon CloudWatch**: Centralized logging và monitoring.
 
-![IoT Weather Station Architecture](/images/2-Proposal/edge_architecture.jpeg)
+#### Thiết kế thành phần
+- **Crawler (Fargate)**: Scrapy Spider cào danh sách tin tức mới nhất, parse bài viết, đẩy trực tiếp vào SQS. Tự động tắt sau khi hoàn thành (~30 phút/ngày).
+- **Queue (SQS)**: Standard queue với cấu hình Visibility Timeout lớn hơn thời gian chạy của Lambda ETL.
+- **ETL + Embed (Lambda)**: Được SQS gọi tự động. Tính SHA256 URL hash để deduplicate, làm sạch HTML bằng regex, chunk text (500 tokens, 50 overlap), gọi Bedrock tạo vector, và insert vào Aurora pgvector.
+- **RAG API (Lambda + API Gateway)**: Embed câu hỏi qua Bedrock, cosine similarity search trên pgvector, sinh câu trả lời qua Groq/Gemini có trích dẫn nguồn.
 
-![IoT Weather Platform Architecture](/images/2-Proposal/platform_architecture.jpeg)
+### 4. Triển khai kỹ thuật
+#### Các giai đoạn triển khai
+Dự án theo 4 giai đoạn:
+- **Giai đoạn 1 - Hạ tầng (Tuần 1-2)**: Thiết lập thủ công qua AWS Management Console các tài nguyên cốt lõi: Custom VPC, Subnets, VPC Endpoints, Security Groups, RDS Proxy, Aurora pgvector, ECS Cluster, Lambda, SQS, IAM, CloudWatch. Xây dựng Docker image cho Fargate và đẩy lên ECR.
+- **Giai đoạn 2 - Phát triển cục bộ (Tuần 3-6)**: Docker Compose với PostgreSQL, Qdrant, Kafka. Phát triển Scrapy Spider, Kafka Consumer (mô phỏng SQS), ETL pipeline với Star Schema, SentenceTransformer vectorization.
+- **Giai đoạn 3 - Production AWS (Tuần 7-10)**: Deploy Fargate crawler gắn với EventBridge scheduler. Kết nối SQS trigger cho Lambda ETL. Cấu hình Lambda RAG API với API Gateway. Tích hợp Bedrock qua PrivateLink.
+- **Giai đoạn 4 - Kiểm thử (Tuần 11-12)**: RAGAS evaluation (Faithfulness, Relevancy, Precision, Recall), kiểm tra CloudWatch logs, Locust load testing, giám sát Connection Pool qua RDS Proxy, tối ưu chi phí.
 
-*Dịch vụ AWS sử dụng*  
-- *AWS IoT Core*: Tiếp nhận dữ liệu MQTT từ 5 trạm, mở rộng lên 15.  
-- *AWS Lambda*: Xử lý dữ liệu và kích hoạt Glue jobs (2 hàm).  
-- *Amazon API Gateway*: Giao tiếp với ứng dụng web.  
-- *Amazon S3*: Lưu trữ dữ liệu thô (data lake) và dữ liệu đã xử lý (2 bucket).  
-- *AWS Glue*: Crawlers lập chỉ mục dữ liệu, ETL jobs chuyển đổi và tải dữ liệu.  
-- *AWS Amplify*: Lưu trữ giao diện web Next.js.  
-- *Amazon Cognito*: Quản lý quyền truy cập cho người dùng phòng lab.  
+#### Yêu cầu kỹ thuật
+- **Data Pipeline**: Scrapy Spider (Python), SQS, PostgreSQL với pgvector.
+- **ETL Pipeline**: Làm sạch văn bản, chunk text 500 tokens, vector hóa qua Bedrock Titan v2 (AWS).
+- **RAG System**: pgvector HNSW similarity search, Groq API (Qwen3-8B, Llama 3.1), Gemini 2.0 Flash fallback, structured prompts với trích dẫn nguồn.
+- **Infrastructure**: Cấu hình ClickOps qua AWS Console, Docker multi-stage builds, Lambda deployment packages (ZIP/Layers).
 
-*Thiết kế thành phần*  
-- *Thiết bị biên*: Raspberry Pi thu thập và lọc dữ liệu cảm biến, gửi tới IoT Core.  
-- *Tiếp nhận dữ liệu*: AWS IoT Core nhận tin nhắn MQTT từ thiết bị biên.  
-- *Lưu trữ dữ liệu*: Dữ liệu thô lưu trong S3 data lake; dữ liệu đã xử lý lưu ở một S3 bucket khác.  
-- *Xử lý dữ liệu*: AWS Glue Crawlers lập chỉ mục dữ liệu; ETL jobs chuyển đổi để phân tích.  
-- *Giao diện web*: AWS Amplify lưu trữ ứng dụng Next.js cho bảng điều khiển và phân tích thời gian thực.  
-- *Quản lý người dùng*: Amazon Cognito giới hạn 5 tài khoản hoạt động.  
+### 5. Timeline & Milestones
+**Dòng thời gian dự án**
+- Pre-Internship (Tháng 0): Lập kế hoạch, học AWS cơ bản (Network, Compute, Database).
+- Internship (Tháng 1-3):
+  - Tháng 1: Thiết lập cấu hình hạ tầng trực tiếp trên Console, môi trường dev local, phát triển crawler.
+  - Tháng 2: ETL pipeline, cơ sở dữ liệu, vector hóa, phát triển RAG API.
+  - Tháng 3: Triển khai luồng SQS -> Lambda ETL, kiểm thử (RAGAS), monitoring mạng nội bộ, tối ưu tài nguyên.
+- Post-Launch: Duy trì và mở rộng (semantic chunking, hybrid search, topic alerts).
 
-### 4. Triển khai kỹ thuật  
-*Các giai đoạn triển khai*  
-Dự án gồm 2 phần — thiết lập trạm thời tiết biên và xây dựng nền tảng thời tiết — mỗi phần trải qua 4 giai đoạn:  
-1. *Nghiên cứu và vẽ kiến trúc*: Nghiên cứu Raspberry Pi với cảm biến ESP32 và thiết kế kiến trúc AWS Serverless (1 tháng trước kỳ thực tập).  
-2. *Tính toán chi phí và kiểm tra tính khả thi*: Sử dụng AWS Pricing Calculator để ước tính và điều chỉnh (Tháng 1).  
-3. *Điều chỉnh kiến trúc để tối ưu chi phí/giải pháp*: Tinh chỉnh (ví dụ tối ưu Lambda với Next.js) để đảm bảo hiệu quả (Tháng 2).  
-4. *Phát triển, kiểm thử, triển khai*: Lập trình Raspberry Pi, AWS services với CDK/SDK và ứng dụng Next.js, sau đó kiểm thử và đưa vào vận hành (Tháng 2–3).  
+### 6. Dự toán ngân sách
+Tham khảo [AWS Pricing Calculator](https://calculator.aws/#/) để ước tính.
 
-*Yêu cầu kỹ thuật*  
-- *Trạm thời tiết biên*: Cảm biến (nhiệt độ, độ ẩm, lượng mưa, tốc độ gió), vi điều khiển ESP32, Raspberry Pi làm thiết bị biên. Raspberry Pi chạy Raspbian, sử dụng Docker để lọc dữ liệu và gửi 1 MB/ngày/trạm qua MQTT qua Wi-Fi.  
-- *Nền tảng thời tiết*: Kiến thức thực tế về AWS Amplify (lưu trữ Next.js), Lambda (giảm thiểu do Next.js xử lý), AWS Glue (ETL), S3 (2 bucket), IoT Core (gateway và rules), và Cognito (5 người dùng). Sử dụng AWS CDK/SDK để lập trình (ví dụ IoT Core rules tới S3). Next.js giúp giảm tải Lambda cho ứng dụng web fullstack.  
+#### Chi phí hạ tầng (Hàng tháng)
+- Aurora Serverless v2 (2 ACU): ~$15-20
+- ECS Fargate Crawler (0.25 vCPU, 0.5 GB, ~5 phút/ngày): < $0.10
+- Lambda (2 functions): ~$2-3
+- SQS Standard & API Gateway: ~$0.50
+- Bedrock Titan Embed & VPC Endpoints: ~$1.50
+- CloudWatch Logs (7-day retention): ~$1-2
+- **Tổng: ~$20-25/tháng**
 
-### 5. Lộ trình & Mốc triển khai  
-- *Trước thực tập (Tháng 0)*: 1 tháng lên kế hoạch và đánh giá trạm cũ.  
-- *Thực tập (Tháng 1–3)*:  
-    - Tháng 1: Học AWS và nâng cấp phần cứng.  
-    - Tháng 2: Thiết kế và điều chỉnh kiến trúc.  
-    - Tháng 3: Triển khai, kiểm thử, đưa vào sử dụng.  
-- *Sau triển khai*: Nghiên cứu thêm trong vòng 1 năm.  
+### 7. Đánh giá rủi ro
+#### Ma trận rủi ro
+- Crawler bị chặn: Medium impact, medium probability (giảm thiểu với headers phù hợp, tôn trọng robots.txt, DOWNLOAD_DELAY).
+- Database Connection Limit: High impact, low probability (đã giải quyết triệt để bằng RDS Proxy).
+- LLM API outage (Groq/Gemini): High impact, low probability (giảm thiểu với multi-model fallback).
+- Vượt chi phí: Medium impact, low probability (giảm thiểu với budget alerts, right-sizing Lambda).
 
-### 6. Ước tính ngân sách  
-Có thể xem chi phí trên [AWS Pricing Calculator](https://calculator.aws/#/estimate?id=621f38b12a1ef026842ba2ddfe46ff936ed4ab01)  
-Hoặc tải [tệp ước tính ngân sách](../attachments/budget_estimation.pdf).  
+#### Chiến lược giảm thiểu
+- **Crawler**: Tôn trọng robots.txt, 1s DOWNLOAD_DELAY, AutoThrottle bật.
+- **Quá tải Database**: Sử dụng RDS Proxy để điều tiết connection từ hàng nghìn request Lambda SQS.
+- **LLM Fallback**: Chuỗi fallback: Groq Qwen3 → Llama 3.1 → Gemini 2.0 Flash.
+- **Chi phí**: Thiết lập AWS Budget alerts tại 80%, thời gian timeout hợp lý cho Lambda.
 
-*Chi phí hạ tầng*  
-- AWS Lambda: 0,00 USD/tháng (1.000 request, 512 MB lưu trữ).  
-- S3 Standard: 0,15 USD/tháng (6 GB, 2.100 request, 1 GB quét).  
-- Truyền dữ liệu: 0,02 USD/tháng (1 GB vào, 1 GB ra).  
-- AWS Amplify: 0,35 USD/tháng (256 MB, request 500 ms).  
-- Amazon API Gateway: 0,01 USD/tháng (2.000 request).  
-- AWS Glue ETL Jobs: 0,02 USD/tháng (2 DPU).  
-- AWS Glue Crawlers: 0,07 USD/tháng (1 crawler).  
-- MQTT (IoT Core): 0,08 USD/tháng (5 thiết bị, 45.000 tin nhắn).  
+### 8. Kết quả mong đợi
+#### Cải thiện kỹ thuật
+Tổng hợp tin tức tự động thay thế tìm kiếm thủ công. Hỏi đáp AI có trích dẫn nguồn tiết kiệm thời gian. Kiến trúc Event-Driven Serverless xử lý mượt mà lượng dữ liệu dồn dập mà không gây tắc nghẽn hệ thống hay sập cơ sở dữ liệu.
 
-*Tổng*: 0,7 USD/tháng, 8,40 USD/12 tháng  
-- *Phần cứng*: 265 USD một lần (Raspberry Pi 5 và cảm biến).  
-
-### 7. Đánh giá rủi ro  
-*Ma trận rủi ro*  
-- Mất mạng: Ảnh hưởng trung bình, xác suất trung bình.  
-- Hỏng cảm biến: Ảnh hưởng cao, xác suất thấp.  
-- Vượt ngân sách: Ảnh hưởng trung bình, xác suất thấp.  
-
-*Chiến lược giảm thiểu*  
-- Mạng: Lưu trữ cục bộ trên Raspberry Pi với Docker.  
-- Cảm biến: Kiểm tra định kỳ, dự phòng linh kiện.  
-- Chi phí: Cảnh báo ngân sách AWS, tối ưu dịch vụ.  
-
-*Kế hoạch dự phòng*  
-- Quay lại thu thập thủ công nếu AWS gặp sự cố.  
-- Sử dụng CloudFormation để khôi phục cấu hình liên quan đến chi phí.  
-
-### 8. Kết quả kỳ vọng  
-*Cải tiến kỹ thuật*: Dữ liệu và phân tích thời gian thực thay thế quy trình thủ công. Có thể mở rộng tới 10–15 trạm.  
-*Giá trị dài hạn*: Nền tảng dữ liệu 1 năm cho nghiên cứu AI, có thể tái sử dụng cho các dự án tương lai.
+#### Giá trị dài hạn
+- Hệ thống RAG nền tảng cho các dự án NLP/AI trong tương lai.
+- Các thành phần pipeline có thể tái sử dụng cho lĩnh vực khác (tech blogs, research papers).
+- Kinh nghiệm thực tế sâu sắc với thiết kế mạng (VPC) và các dịch vụ quản lý sự kiện của AWS.
+- Nền tảng dữ liệu (~5000 bài viết) cho phân tích sau này.

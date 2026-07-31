@@ -1,59 +1,29 @@
 ---
-title: "Worklog Tuần 3"
-date: 2024-01-01
-weight: 1
+title: 'Worklog Tuần 3 (15/06 - 21/06)'
+date: 2026-06-15
+weight: 3
 chapter: false
 pre: " <b> 1.3. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Lưu ý:** Các thông tin dưới đây chỉ nhằm mục đích tham khảo, vui lòng **không sao chép nguyên văn** cho bài báo cáo của bạn kể cả warning này.
-{{% /notice %}}
-
-
 ### Mục tiêu tuần 3:
-
-* Kết nối, làm quen với các thành viên trong First Cloud AI Journey.
-* Hiểu dịch vụ AWS cơ bản, cách dùng console & CLI.
+* Hỗ trợ phát triển module Crawler với framework Scrapy tại môi trường Local.
+* Bóc tách nội dung HTML và tích hợp thư viện `newspaper3k`.
+* Đẩy luồng dữ liệu thô cào được vào hệ thống hàng đợi Kafka.
 
 ### Các công việc cần triển khai trong tuần này:
-| Thứ | Công việc                                                                                                                                                                                   | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu                            |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- | ----------------------------------------- |
-| 2   | - Làm quen với các thành viên FCAJ <br> - Đọc và lưu ý các nội quy, quy định tại đơn vị thực tập                                                                                             | 11/08/2025   | 11/08/2025      |
-| 3   | - Tìm hiểu AWS và các loại dịch vụ <br>&emsp; + Compute <br>&emsp; + Storage <br>&emsp; + Networking <br>&emsp; + Database <br>&emsp; + ... <br>                                            | 12/08/2025   | 12/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 4   | - Tạo AWS Free Tier account <br> - Tìm hiểu AWS Console & AWS CLI <br> - **Thực hành:** <br>&emsp; + Tạo AWS account <br>&emsp; + Cài AWS CLI & cấu hình <br> &emsp; + Cách sử dụng AWS CLI | 13/08/2025   | 13/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 5   | - Tìm hiểu EC2 cơ bản: <br>&emsp; + Instance types <br>&emsp; + AMI <br>&emsp; + EBS <br>&emsp; + ... <br> - Các cách remote SSH vào EC2 <br> - Tìm hiểu Elastic IP   <br>                  | 14/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-| 6   | - **Thực hành:** <br>&emsp; + Tạo EC2 instance <br>&emsp; + Kết nối SSH <br>&emsp; + Gắn EBS volume                                                                                         | 15/08/2025   | 15/08/2025      | <https://cloudjourney.awsstudygroup.com/> |
-
+| Thứ | Công việc | Ngày bắt đầu | Ngày hoàn thành | Nguồn tài liệu |
+| --- | --------- | ------------ | --------------- | -------------- |
+| 2 | Khởi tạo Scrapy project, tạo file `config_site.json` chứa 3 trang báo mục tiêu | 15/06/2026 | 15/06/2026 | Scrapy Official Docs |
+| 3 | Code logic Spider quét cấu trúc trang chủ và trích xuất URL bài viết mới | 16/06/2026 | 16/06/2026 | Scrapy Docs |
+| 4 | Tích hợp `newspaper3k` vào luồng cào để bóc tách chính xác Title và Text | 17/06/2026 | 17/06/2026 | Newspaper3k Docs |
+| 5 | Cấu hình `settings.py`: Thêm User-Agent tĩnh và DOWNLOAD_DELAY để chống chặn | 18/06/2026 | 18/06/2026 | Scrapy Practices |
+| 6 | Code logic Pipeline tính toán chuỗi hash SHA256 cho mỗi bài báo | 19/06/2026 | 19/06/2026 | Python `hashlib` |
+| 7 | Code Kafka Producer đẩy cục dữ liệu JSON vừa cào vào topic `news_raw` (local) | 20/06/2026 | 20/06/2026 | Kafka Python Client |
+| 8 | Debug, xử lý lỗi parse HTML trên một số layout đặc biệt của VnExpress | 21/06/2026 | 21/06/2026 | StackOverflow |
 
 ### Kết quả đạt được tuần 3:
-
-* Hiểu AWS là gì và nắm được các nhóm dịch vụ cơ bản: 
-  * Compute
-  * Storage
-  * Networking 
-  * Database
-  * ...
-
-* Đã tạo và cấu hình AWS Free Tier account thành công.
-
-* Làm quen với AWS Management Console và biết cách tìm, truy cập, sử dụng dịch vụ từ giao diện web.
-
-* Cài đặt và cấu hình AWS CLI trên máy tính bao gồm:
-  * Access Key
-  * Secret Key
-  * Region mặc định
-  * ...
-
-* Sử dụng AWS CLI để thực hiện các thao tác cơ bản như:
-
-  * Kiểm tra thông tin tài khoản & cấu hình
-  * Lấy danh sách region
-  * Xem dịch vụ EC2
-  * Tạo và quản lý key pair
-  * Kiểm tra thông tin dịch vụ đang chạy
-  * ...
-
-* Có khả năng kết nối giữa giao diện web và CLI để quản lý tài nguyên AWS song song.
-* ...
-
-
+* Crawler hoạt động ổn định ở môi trường Local, tự động quét và trích xuất URL chính xác từ 3 nguồn (VnExpress, Dân Trí, VietnamNet).
+* Tích hợp thành công `newspaper3k`, bóc tách hoàn chỉnh Title và Text sạch từ các layout báo chí khác nhau.
+* Vượt qua cơ chế chặn IP của các trang web nhờ thiết lập thành công cấu hình User-Agent tĩnh và Download Delay.
+* Luồng dữ liệu Streaming (Kafka Producer) vận hành trơn tru, đẩy tin tức thô vào queue liên tục mà không bị ngắt kết nối hay thất thoát.
+* Dữ liệu thô được lưu vào một bảng tạm 'article metadata' trước khi được xử lý.

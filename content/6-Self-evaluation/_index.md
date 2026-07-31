@@ -6,12 +6,9 @@ chapter: false
 pre: " <b> 6. </b> "
 ---
 
-{{% notice warning %}}
-⚠️ **Note:** The information below is for reference purposes only. Please **do not copy it verbatim** into your report, including this warning.
-{{% /notice %}}
 
-During my internship at **[Company/Organization Name]** from **[start date]** to **[end date]**, I had the opportunity to learn, practice, and apply the knowledge acquired in school to a real-world working environment.  
-I participated in **[briefly describe the main project or task]**, through which I improved my skills in **[list skills: programming, analysis, reporting, communication, etc.]**.  
+
+During my internship, I participated in the development of the **News RAG** project, an intelligent news platform that automatically collects real-time news articles, stores them in a data warehouse, and provides an AI-powered question-answering web application. My responsibilities included developing the web crawler, designing the data warehouse, implementing ETL pipelines, deploying the serverless ingestion workflow on AWS Cloud using Amazon ECS Fargate and Amazon EventBridge, and developing the frontend using Next.js with Amazon CloudFront. Through this project, I significantly improved my technical skills in Python, Scrapy, ETL development, Next.js, data warehouse design (Star Schema), cloud deployment on AWS (Amazon ECS Fargate, Amazon ECR, Amazon EventBridge, and Amazon CloudFront), as well as teamwork, technical documentation, and report writing.
 
 In terms of work ethic, I always strived to complete tasks well, complied with workplace regulations, and actively engaged with colleagues to improve work efficiency.
 
@@ -21,9 +18,9 @@ To objectively reflect on my internship period, I would like to evaluate myself 
 | --- | ----------------------------------- | ------------------------------------------------------------------------------------------------ | ---- | ---- | ------- |
 | 1   | **Professional knowledge & skills** | Understanding of the field, applying knowledge in practice, proficiency with tools, work quality | ✅    | ☐    | ☐       |
 | 2   | **Ability to learn**                | Ability to absorb new knowledge and learn quickly                                                | ☐    | ✅    | ☐       |
-| 3   | **Proactiveness**                   | Taking initiative, seeking out tasks without waiting for instructions                            | ✅    | ☐    | ☐       |
+| 3   | **Proactiveness**                   | Taking initiative, seeking out tasks without waiting for instructions                            | ☐    | ✅    | ☐       |
 | 4   | **Sense of responsibility**         | Completing tasks on time and ensuring quality                                                    | ✅    | ☐    | ☐       |
-| 5   | **Discipline**                      | Adhering to schedules, rules, and work processes                                                 | ☐    | ☐    | ✅       |
+| 5   | **Discipline**                      | Adhering to schedules, rules, and work processes                                                 | ☐    |  ✅   |   ☐    |
 | 6   | **Progressive mindset**             | Willingness to receive feedback and improve oneself                                              | ☐    | ✅    | ☐       |
 | 7   | **Communication**                   | Presenting ideas and reporting work clearly                                                      | ☐    | ✅    | ☐       |
 | 8   | **Teamwork**                        | Working effectively with colleagues and participating in teams                                   | ✅    | ☐    | ☐       |
@@ -34,6 +31,8 @@ To objectively reflect on my internship period, I would like to evaluate myself 
 
 ### Needs Improvement
 
-* Strengthen discipline and strictly comply with the rules and regulations of the company or any organization  
-* Improve problem-solving thinking  
-* Enhance communication skills in both daily interactions and professional contexts, including handling situations effectively
+* **Improve discipline and adherence to development standards:** Strengthen self-discipline by consistently following project schedules, submitting worklogs on time, and adhering to Git workflow practices to ensure the timely delivery of crawler, ETL, and frontend modules.
+
+* **Enhance technical problem-solving skills:** Improve root cause analysis skills when troubleshooting technical issues, such as adapting the crawler to changes in website HTML structures or resolving failures in data cleaning pipelines, and proactively propose effective solutions instead of relying on external assistance.
+
+* **Strengthen communication and collaboration skills:** Improve communication regarding API contracts and data structures between the crawler/ETL components and backend services developed by teammates. Be more proactive in discussions and more adaptable when resolving integration issues during collaborative development.

@@ -1,31 +1,35 @@
 ---
-title: "Blog 3"
+title: "Blog 3: Xây dựng RAG tối ưu"
 date: 2024-01-01
-weight: 1
+weight: 3
 chapter: false
 pre: " <b> 3.3. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Lưu ý:** Các thông tin dưới đây chỉ nhằm mục đích tham khảo, vui lòng **không sao chép nguyên văn** cho bài báo cáo của bạn kể cả warning này.
-{{% /notice %}}
 
-# SESSION POLICIES TRONG AMAZON EKS POD IDENTITY
+# Hiện thực hóa hệ thống RAG với Amazon Bedrock và Aurora pgvector
 
-Amazon EKS Pod Identity vừa bổ sung tính năng session policies, cho phép bạn thu hẹp quyền IAM một cách linh hoạt và chính xác cho từng pod mà không cần tạo thêm nhiều IAM roles riêng biệt. Đây là bước tiến quan trọng giúp áp dụng nguyên tắc least privilege hiệu quả hơn trong môi trường Kubernetes quy mô lớn.
+**Retrieval-Augmented Generation (RAG)** là phương pháp kết hợp sức mạnh của Mô hình ngôn ngữ lớn (LLM) với dữ liệu riêng của doanh nghiệp. Để RAG hoạt động hiệu quả, trái tim của hệ thống chính là **Embedding Model** (để biến văn bản thành vector) và **Vector Database** (để lưu trữ và tìm kiếm vector). 
 
-Các điểm chính cần nắm:
+Dưới đây là cách chúng tôi xây dựng trái tim này hoàn toàn bằng hệ sinh thái AWS.
 
-* Session policy là một IAM policy inline được chỉ định khi tạo hoặc cập nhật Pod Identity association.
-* Quyền hiệu quả = intersection (giao) giữa permissions của IAM role và session policy → session policy chỉ có thể thu hẹp, không thể mở rộng quyền.
-* Giúp tránh tình trạng over-permissioning khi reuse chung một IAM role cho nhiều workloads có nhu cầu khác nhau.
-* Hỗ trợ cả same-account và cross-account (qua IAM role chaining).
-* Giảm đáng kể số lượng IAM roles cần quản lý, tránh chạm giới hạn quota IAM trong cluster lớn.
-* Cấu hình dễ dàng qua AWS Management Console, AWS CLI hoặc AWS SDK khi tạo association giữa Kubernetes ServiceAccount và IAM role.
+### 1. Amazon Bedrock: Sức mạnh nhúng (Embedding)
 
-Tính năng này đặc biệt hữu ích khi bạn có nhiều ứng dụng chạy trên cùng một IAM role nhưng cần giới hạn quyền khác nhau (ví dụ: một pod chỉ đọc S3 bucket cụ thể, pod khác chỉ gọi một số API nhất định).
+Thay vì phải tự host các model như HuggingFace SentenceTransformer trên EC2 (rất tốn kém GPU) hoặc Lambda (chạy chậm và dễ cold-start), chúng tôi sử dụng **Amazon Bedrock** với mô hình `amazon.titan-embed-text-v2:0`.
 
-...Hình ảnh...
+*   **Hiệu suất và chi phí**: API của Bedrock phản hồi rất nhanh, xử lý embedding cho các đoạn chunk văn bản trong tích tắc. Chi phí được tính theo số token, vô cùng rẻ cho các dự án vừa và nhỏ.
+*   **Tính nhất quán tuyệt đối**: Nguyên tắc sống còn của RAG là dữ liệu trong Database và câu hỏi của người dùng (Query) phải được chuyển thành vector bởi **cùng một model**. Bằng cách gọi Bedrock API ở cả khâu ETL và khâu RAG API, chúng tôi đảm bảo tính nhất quán tuyệt đối của không gian vector (vector space).
 
-...Link...
+### 2. Amazon Aurora Serverless v2 + pgvector
 
-...Hướng dẫn...
+Thay vì dùng các Vector Database bên thứ ba như Qdrant, Pinecone hay Milvus, chúng tôi quyết định sử dụng **Amazon Aurora PostgreSQL** kết hợp với extension **`pgvector`**.
+
+*   **Tất cả trong một**: PostgreSQL cho phép lưu trữ siêu dữ liệu (metadata như tác giả, ngày đăng, URL) theo cấu trúc quan hệ (Star Schema) kết hợp với cột kiểu `vector` để lưu embedding. Điều này giúp chúng tôi dễ dàng thực hiện các truy vấn kết hợp: "Tìm các bài báo về kinh tế (vector search) nhưng chỉ lấy những bài xuất bản trong tuần này (SQL filter)".
+*   **Chỉ mục HNSW**: Để tìm kiếm nhanh trên hàng trăm ngàn chunk dữ liệu, chúng tôi cấu hình chỉ mục **HNSW (Hierarchical Navigable Small World)** trên cột vector. Nhờ đó, truy vấn tìm kiếm độ tương tự (cosine similarity) trả về kết quả gần như ngay lập tức.
+*   **Serverless v2**: Database Aurora tự động scale lên xuống (từ 0.5 đến 2 ACU) dựa trên tải hệ thống, giúp tối ưu chi phí mà vẫn đảm bảo hiệu suất khi có người dùng truy vấn hỏi đáp.
+
+### Kết luận
+
+Kiến trúc kết hợp giữa Amazon Bedrock và Aurora pgvector mang lại một giải pháp RAG khép kín (End-to-End) hoàn toàn trên AWS. Dữ liệu tin tức không bao giờ phải rời khỏi VPC của hệ thống để gọi ra bên ngoài, đảm bảo tính bảo mật và giảm độ trễ mạng tối đa. Đây chính là điểm nhấn kỹ thuật mà chúng tôi tâm đắc nhất trong toàn bộ quy trình xây dựng ứng dụng.
+
+### Blog screenshot
+![Blog 3](/images/3-BlogsPosted/Blog3.png)

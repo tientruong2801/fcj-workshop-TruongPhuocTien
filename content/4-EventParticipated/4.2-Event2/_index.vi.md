@@ -1,125 +1,68 @@
 ---
 title: "Event 2"
-date: 2024-01-01
-weight: 1
+date: 2026-06-13
+weight: 2
 chapter: false
 pre: " <b> 4.2. </b> "
 ---
 
-{{% notice warning %}}
-⚠️ **Lưu ý:** Các thông tin dưới đây chỉ nhằm mục đích tham khảo, vui lòng **không sao chép nguyên văn** cho bài báo cáo của bạn kể cả warning này.
-{{% /notice %}}
+# Event Report: "AWS First Cloud Journey - 13/06 Event"
 
-# Bài thu hoạch “GenAI-powered App-DB Modernization workshop”
+### Event Objectives
+- Explore the working environment, recruitment process, and culture of multinational corporations (MNCs).
+- Learn about the career journey from a curious university student to becoming an AWS Partner.
+- Understand the realities of a DevOps career and build a solid technical foundation for long-term professional growth.
 
-### Mục Đích Của Sự Kiện
+### Speakers
+- **Dat Pham & Cuong Nguyen** – Data Analytics Engineer and Process Engineer, shared insights into the mindset and culture of multinational corporations.
+- **Danh Hoang Hieu Nghi** – AI Engineer and AWS Community Builder, presented the topic *"From First Cloud AI Journey to AWS Partner"*.
+- **Trong Truong** – DevOps Engineer at Endava Vietnam, presented *"What Does a DevOps Engineer Really Do?"*.
 
-- Chia sẻ best practices trong thiết kế ứng dụng hiện đại
-- Giới thiệu phương pháp DDD và event-driven architecture
-- Hướng dẫn lựa chọn compute services phù hợp
-- Giới thiệu công cụ AI hỗ trợ development lifecycle
+### Key Takeaways
 
-### Danh Sách Diễn Giả
+#### Working Culture in Multinational Corporations (MNCs)
+- The role of a Data Analytics Engineer extends beyond generating reports; it also involves designing dashboards, identifying root causes, and collaborating across departments to solve business problems.
+- Many multinational companies embrace a **No-Blame Post-Mortem** culture, where engineers focus on identifying and fixing system issues rather than assigning blame to individuals.
+- Career progression can be viewed through five stages of professional growth: **Follower → Learner → Problem Solver → System Thinker → Super Star**. At the System Thinker level, engineers evaluate problems from a holistic perspective while considering operational risks and long-term optimization.
 
-- **Jignesh Shah** - Director, Open Source Databases
-- **Erica Liu** - Sr. GTM Specialist, AppMod
-- **Fabrianne Effendi** - Assc. Specialist SA, Serverless Amazon Web Services
+#### Growing with the AWS Community
+- A recommended eight-step career roadmap includes: **Student Curiosity → First Cloud Journey → Community Learning → Hands-on Practice → Real Projects → Portfolio Development → AWS Partner → Share Back**.
+- Programs such as the AWS Student Builder Group and AWS Community Builder provide valuable opportunities to gain certifications, AWS credits, and expand professional networks.
 
-### Nội Dung Nổi Bật
+#### Understanding the Reality of DevOps
+- There is a significant difference between the common perception of DevOps (CI/CD, Docker, Kubernetes, and deployments) and the actual responsibilities, which include on-call support, troubleshooting staging environments, cloud cost optimization, and ownership of operational issues.
+- The demand for Cloud and DevOps engineers in Vietnam continues to grow, accompanied by highly competitive salaries.
+- The most important skills are not specific tools but strong fundamentals in Linux, Networking, and programming languages such as Python and Go.
 
-#### Đưa ra các ảnh hưởng tiêu cực của kiến trúc ứng dụng cũ
+### Knowledge Gained
 
-- Thời gian release sản phẩm lâu → Mất doanh thu/bỏ lỡ cơ hội
-- Hoạt động kém hiệu quả → Mất năng suất, tốn kém chi phí
-- Không tuân thủ các quy định về bảo mật → Mất an ninh, uy tín
+#### Design Thinking & Problem Solving
+- In data-related fields, critical thinking and **storytelling with data** are essential for transforming raw numbers into meaningful business insights.
+- Effective DevOps engineers adopt a **systems thinking** mindset rather than focusing solely on isolated technical tasks.
+- Repetitive tasks should be automated, and systems should be designed to be maintainable and accessible for the entire team.
 
-#### Chuyển đổi sang kiến trúc ứng dụng mới - Microservice Architecture
+#### Technical Knowledge
+- Simply copying commands is very different from understanding how a system actually works.
+- The most effective learning approach is to build small projects, deploy applications, automate workflows, implement monitoring, intentionally break the system, and then troubleshoot and fix it.
+- Artificial Intelligence should be used as a tool to enhance learning and productivity rather than replacing critical thinking.
 
-Chuyển đổi thành hệ thống modular – từng chức năng là một **dịch vụ độc lập** giao tiếp với nhau qua **sự kiện** với 3 trụ cột cốt lõi:
+#### Career Development Strategy
+- Rather than focusing on job titles, engineers should prioritize developing the mindset and skills required to consistently deliver high-quality results.
+- Communication is an essential part of technical work, and sharing knowledge with the community is one of the best ways to reinforce personal growth.
 
-- **Queue Management**: Xử lý tác vụ bất đồng bộ
-- **Caching Strategy:** Tối ưu performance
-- **Message Handling:** Giao tiếp linh hoạt giữa services
+### Applications to My Work and Studies
+- Apply **storytelling with data** principles to current Data Warehouse and ETL projects so that processed data delivers meaningful insights instead of merely being clean and structured.
+- Follow the principle of **mastering the fundamentals** when working with containerized systems by understanding Linux internals and networking instead of relying solely on existing templates.
+- Actively participate in communities such as the AWS Student Builder Group to gain practical experience and strengthen incident-handling and system engineering skills.
 
-#### Domain-Driven Design (DDD)
+### Event Experience
 
-- **Phương pháp 4 bước**: Xác định domain events → sắp xếp timeline → identify actors → xác định bounded contexts
-- **Case study bookstore**: Minh họa cách áp dụng DDD thực tế
-- **Context mapping**: 7 patterns tích hợp bounded contexts
+Attending the meetup on **June 13** provided valuable insights into both career development and the realities of working in the technology industry.
 
-#### Event-Driven Architecture
+The session that impressed me the most was the discussion on **corporate culture in multinational companies (MNCs)**. A professional working environment requires not only strong technical skills but also an open and collaborative mindset. The concept of **No-Blame Post-Mortem**, which emphasizes identifying and resolving root causes instead of blaming individuals, stood out as an especially valuable engineering practice. When developing complex software systems or data platforms, bugs and unexpected issues are inevitable. Adopting a no-blame culture, together with empathy and inclusiveness, helps create a healthy environment where team members can collaborate effectively, continuously improve systems, and learn from failures.
 
-- **3 patterns tích hợp**: Publish/Subscribe, Point-to-point, Streaming
-- **Lợi ích**: Loose coupling, scalability, resilience
-- **So sánh sync vs async**: Hiểu rõ trade-offs (sự đánh đổi)
+Another inspiring takeaway was the **five-level professional growth model**. Moving beyond simply completing assigned tasks toward becoming a **System Thinker**—someone who understands the entire system, evaluates operational risks, and designs long-term solutions—is the career direction I aspire to pursue as I continue developing as a software engineer.
 
-#### Compute Evolution
-
-- **Shared Responsibility Model**: Từ EC2 → ECS → Fargate → Lambda
-- **Serverless benefits**: No server management, auto-scaling, pay-for-value
-- **Functions vs Containers**: Criteria lựa chọn phù hợp
-
-#### Amazon Q Developer
-
-- **SDLC automation**: Từ planning đến maintenance
-- **Code transformation**: Java upgrade, .NET modernization
-- **AWS Transform agents**: VMware, Mainframe, .NET migration
-
-### Những Gì Học Được
-
-#### Tư Duy Thiết Kế
-
-- **Business-first approach**: Luôn bắt đầu từ business domain, không phải technology
-- **Ubiquitous language**: Importance của common vocabulary giữa business và tech teams
-- **Bounded contexts**: Cách identify và manage complexity trong large systems
-
-#### Kiến Trúc Kỹ Thuật
-
-- **Event storming technique**: Phương pháp thực tế để mô hình hóa quy trình kinh doanh
-- Sử dụng **Event-driven communication** thay vì synchronous calls
-- **Integration patterns**: Hiểu khi nào dùng sync, async, pub/sub, streaming
-- **Compute spectrum**: Criteria chọn từ VM → containers → serverless
-
-#### Chiến Lược Hiện Đại Hóa
-
-- **Phased approach**: Không rush, phải có roadmap rõ ràng
-- **7Rs framework**: Nhiều con đường khác nhau tùy thuộc vào đặc điểm của mỗi ứng dụng
-- **ROI measurement**: Cost reduction + business agility
-
-### Ứng Dụng Vào Công Việc
-
-- **Áp dụng DDD** cho project hiện tại: Event storming sessions với business team
-- **Refactor microservices**: Sử dụng bounded contexts để identify service boundaries
-- **Implement event-driven patterns**: Thay thế một số sync calls bằng async messaging
-- **Serverless adoption**: Pilot AWS Lambda cho một số use cases phù hợp
-- **Try Amazon Q Developer**: Integrate vào development workflow để boost productivity
-
-### Trải nghiệm trong event
-
-Tham gia workshop **“GenAI-powered App-DB Modernization”** là một trải nghiệm rất bổ ích, giúp tôi có cái nhìn toàn diện về cách hiện đại hóa ứng dụng và cơ sở dữ liệu bằng các phương pháp và công cụ hiện đại. Một số trải nghiệm nổi bật:
-
-#### Học hỏi từ các diễn giả có chuyên môn cao
-- Các diễn giả đến từ AWS và các tổ chức công nghệ lớn đã chia sẻ **best practices** trong thiết kế ứng dụng hiện đại.
-- Qua các case study thực tế, tôi hiểu rõ hơn cách áp dụng **Domain-Driven Design (DDD)** và **Event-Driven Architecture** vào các project lớn.
-
-#### Trải nghiệm kỹ thuật thực tế
-- Tham gia các phiên trình bày về **event storming** giúp tôi hình dung cách **mô hình hóa quy trình kinh doanh** thành các domain events.
-- Học cách **phân tách microservices** và xác định **bounded contexts** để quản lý sự phức tạp của hệ thống lớn.
-- Hiểu rõ trade-offs giữa **synchronous và asynchronous communication** cũng như các pattern tích hợp như **pub/sub, point-to-point, streaming**.
-
-#### Ứng dụng công cụ hiện đại
-- Trực tiếp tìm hiểu về **Amazon Q Developer**, công cụ AI hỗ trợ SDLC từ lập kế hoạch đến maintenance.
-- Học cách **tự động hóa code transformation** và pilot serverless với **AWS Lambda**, từ đó nâng cao năng suất phát triển.
-
-#### Kết nối và trao đổi
-- Workshop tạo cơ hội trao đổi trực tiếp với các chuyên gia, đồng nghiệp và team business, giúp **nâng cao ngôn ngữ chung (ubiquitous language)** giữa business và tech.
-- Qua các ví dụ thực tế, tôi nhận ra tầm quan trọng của **business-first approach**, luôn bắt đầu từ nhu cầu kinh doanh thay vì chỉ tập trung vào công nghệ.
-
-#### Bài học rút ra
-- Việc áp dụng DDD và event-driven patterns giúp giảm **coupling**, tăng **scalability** và **resilience** cho hệ thống.
-- Chiến lược hiện đại hóa cần **phased approach** và đo lường **ROI**, không nên vội vàng chuyển đổi toàn bộ hệ thống.
-- Các công cụ AI như Amazon Q Developer có thể **boost productivity** nếu được tích hợp vào workflow phát triển hiện tại.
-
-#### Một số hình ảnh khi tham gia sự kiện
-* Thêm các hình ảnh của các bạn tại đây
-> Tổng thể, sự kiện không chỉ cung cấp kiến thức kỹ thuật mà còn giúp tôi thay đổi cách tư duy về thiết kế ứng dụng, hiện đại hóa hệ thống và phối hợp hiệu quả hơn giữa các team.
+#### Event Photos
+![Event](/images/4-EventParticipated/Event2.1.png)
+![Event](/images/4-EventParticipated/Event2.2.png)

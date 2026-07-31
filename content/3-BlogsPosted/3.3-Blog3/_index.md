@@ -1,31 +1,36 @@
 ---
-title: "Blog 3"
+title: "Blog 3: Building an Optimized RAG System"
 date: 2024-01-01
-weight: 1
+weight: 3
 chapter: false
 pre: " <b> 3.3. </b> "
 ---
-{{% notice warning %}}
-⚠️ **Note:** The information below is for reference purposes only. Please **do not copy verbatim** for your report, including this warning.
-{{% /notice %}}
 
-# SESSION POLICIES IN AMAZON EKS POD IDENTITY
+# Realizing the RAG System with Amazon Bedrock and Aurora pgvector
 
-Amazon EKS Pod Identity has recently added the session policies feature, allowing you to narrow IAM permissions flexibly and precisely for each pod without needing to create many separate IAM roles. This is an important step forward that helps apply the principle of least privilege more effectively in large-scale Kubernetes environments.
+**Retrieval-Augmented Generation (RAG)** is a method that combines the power of Large Language Models (LLMs) with a business's proprietary data. For RAG to work effectively, the heart of the system is the **Embedding Model** (to convert text into vectors) and the **Vector Database** (to store and search vectors). 
 
-Key points to know:
+Here is how we built this heart entirely using the AWS ecosystem.
 
-* A session policy is an inline IAM policy specified when creating or updating a Pod Identity association.
-* Effective permissions = intersection between the IAM role permissions and the session policy → the session policy can only narrow permissions, not expand them.
-* Helps avoid over-permissioning when reusing a single IAM role for multiple workloads with different needs.
-* Supports both same-account and cross-account (via IAM role chaining).
-* Significantly reduces the number of IAM roles that need to be managed, helping avoid hitting IAM quota limits in large clusters.
-* Easily configured through the AWS Management Console, AWS CLI, or AWS SDK when creating an association between a Kubernetes ServiceAccount and an IAM role.
+### 1. Amazon Bedrock: The Power of Embedding
 
-This feature is especially useful when you have many applications running on the same IAM role but need different permission restrictions (for example: one pod only reads a specific S3 bucket, another pod only calls certain APIs).
+Instead of self-hosting models like HuggingFace SentenceTransformer on EC2 (which is very expensive for GPUs) or Lambda (which runs slowly and suffers from cold starts), we used **Amazon Bedrock** with the `amazon.titan-embed-text-v2:0` model.
 
-...Image...
+*   **Performance and Cost**: The Bedrock API responds incredibly fast, processing embeddings for text chunks in milliseconds. The cost is calculated per token, which is extremely cheap for small to medium projects.
+*   **Absolute Consistency**: A vital rule of RAG is that the data in the Database and the user's question (Query) must be converted into vectors by the **same model**. By calling the Bedrock API during both the ETL phase and the RAG API phase, we ensure the absolute consistency of our vector space.
 
-...Link...
+### 2. Amazon Aurora Serverless v2 + pgvector
 
-...Guide...
+Instead of using third-party Vector Databases like Qdrant, Pinecone, or Milvus, we decided to use **Amazon Aurora PostgreSQL** combined with the **`pgvector`** extension.
+
+*   **All-in-one**: PostgreSQL allows storing metadata (like author, publish date, URL) in a relational structure (Star Schema) combined with a `vector` column to store embeddings. This makes it easy for us to perform hybrid queries: "Find articles about the economy (vector search) but only fetch those published this week (SQL filter)".
+*   **HNSW Indexing**: To search quickly across hundreds of thousands of data chunks, we configured the **HNSW (Hierarchical Navigable Small World)** index on the vector column. Consequently, cosine similarity search queries return results almost instantaneously.
+*   **Serverless v2**: The Aurora Database automatically scales up and down (from 0.5 to 2 ACUs) based on system load, optimizing costs while ensuring high performance when users query the Q&A system.
+
+### Conclusion
+
+The architectural combination of Amazon Bedrock and Aurora pgvector provides a closed-loop (End-to-End) RAG solution entirely on AWS. The news data never has to leave the system's VPC to make external calls, ensuring maximum security and reducing network latency. This is the technical highlight we are most proud of in the entire application development process.
+
+
+### Blog screenshot
+![Blog 3](/images/3-BlogsPosted/Blog3.png)
